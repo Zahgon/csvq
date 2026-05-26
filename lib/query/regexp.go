@@ -1,7 +1,6 @@
 package query
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -13,41 +12,16 @@ type RegExpMap struct {
 	*SyncMap
 }
 
-func NewRegExpMap() RegExpMap {
-	return RegExpMap{
-		NewSyncMap(),
-	}
-}
+func NewRegExpMap() RegExpMap { _ = "STUB: not implemented"; return *new(RegExpMap) }
 
-func (rem RegExpMap) Store(key string, value *regexp.Regexp) {
-	rem.store(key, value)
-}
+func (rem RegExpMap) Store(key string, value *regexp.Regexp) { _ = "STUB: not implemented"; return }
 
 func (rem RegExpMap) Load(key string) (*regexp.Regexp, bool) {
-	v, ok := rem.load(key)
-	if ok {
-		return v.(*regexp.Regexp), ok
-	}
-	return nil, ok
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 func (rem RegExpMap) Get(expr string) (*regexp.Regexp, error) {
-	if v, ok := rem.Load(expr); ok {
-		return v, nil
-	}
-
-	rem.lock()
-	defer rem.unlock()
-
-	if v, ok := rem.Load(expr); ok {
-		return v, nil
-	}
-
-	re, err := regexp.Compile(expr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to compile pattern %q", expr)
-	}
-
-	rem.Store(expr, re)
-	return re, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

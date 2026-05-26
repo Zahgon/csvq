@@ -4,9 +4,6 @@ package terminal
 
 import (
 	"io"
-	"os"
 )
 
-func GetStdinForREPL() io.ReadCloser {
-	return os.Stdin
-}
+func GetStdinForREPL() io.ReadCloser { _ = "STUB: not implemented"; return *new(io.ReadCloser) }

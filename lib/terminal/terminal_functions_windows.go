@@ -4,10 +4,6 @@ package terminal
 
 import (
 	"io"
-
-	"github.com/mithrandie/readline-csvq"
 )
 
-func GetStdinForREPL() io.ReadCloser {
-	return readline.NewRawReader()
-}
+func GetStdinForREPL() io.ReadCloser { _ = "STUB: not implemented"; return *new(io.ReadCloser) }

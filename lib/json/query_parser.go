@@ -3,11 +3,7 @@
 //line lib/json/query_parser.y:2
 package json
 
-import __yyfmt__ "fmt"
-
 //line lib/json/query_parser.y:2
-
-import "strconv"
 
 //line lib/json/query_parser.y:7
 type jqSymType struct {
@@ -47,10 +43,8 @@ const jqInitialStackSize = 16
 //line lib/json/query_parser.y:185
 
 func ParseQuery(src string) (QueryExpression, error) {
-	l := new(QueryLexer)
-	l.Init(src)
-	jqParse(l)
-	return l.query, l.err
+	_ = "STUB: not implemented"
+	return *new(QueryExpression), nil
 }
 
 //line yacctab:1
@@ -170,508 +164,142 @@ type jqParserImpl struct {
 	char  int
 }
 
-func (p *jqParserImpl) Lookahead() int {
-	return p.char
-}
+func (p *jqParserImpl) Lookahead() int { _ = "STUB: not implemented"; return 0 }
 
-func jqNewParser() jqParser {
-	return &jqParserImpl{}
-}
+func jqNewParser() jqParser { _ = "STUB: not implemented"; return *new(jqParser) }
 
 const jqFlag = -1000
 
-func jqTokname(c int) string {
-	if c >= 1 && c-1 < len(jqToknames) {
-		if jqToknames[c-1] != "" {
-			return jqToknames[c-1]
-		}
-	}
-	return __yyfmt__.Sprintf("tok-%v", c)
-}
+func jqTokname(c int) string { _ = "STUB: not implemented"; return "" }
 
-func jqStatname(s int) string {
-	if s >= 0 && s < len(jqStatenames) {
-		if jqStatenames[s] != "" {
-			return jqStatenames[s]
-		}
-	}
-	return __yyfmt__.Sprintf("state-%v", s)
-}
+func jqStatname(s int) string { _ = "STUB: not implemented"; return "" }
 
-func jqErrorMessage(state, lookAhead int) string {
-	const TOKSTART = 4
+func jqErrorMessage(state, lookAhead int) string { _ = "STUB: not implemented"; return "" }
 
-	if !jqErrorVerbose {
-		return "syntax error"
-	}
+// To match Bison, suggest at most four expected tokens.
 
-	for _, e := range jqErrorMessages {
-		if e.state == state && e.token == lookAhead {
-			return "syntax error: " + e.msg
-		}
-	}
+// Look for shiftable tokens.
 
-	res := "syntax error: unexpected " + jqTokname(lookAhead)
+// Look for tokens that we accept or reduce.
 
-	// To match Bison, suggest at most four expected tokens.
-	expected := make([]int, 0, 4)
+// If the default action is to accept or reduce, give up.
 
-	// Look for shiftable tokens.
-	base := jqPact[state]
-	for tok := TOKSTART; tok-1 < len(jqToknames); tok++ {
-		if n := base + tok; n >= 0 && n < jqLast && jqChk[jqAct[n]] == tok {
-			if len(expected) == cap(expected) {
-				return res
-			}
-			expected = append(expected, tok)
-		}
-	}
+func jqlex1(lex jqLexer, lval *jqSymType) (char, token int) { _ = "STUB: not implemented"; return 0, 0 }
 
-	if jqDef[state] == -2 {
-		i := 0
-		for jqExca[i] != -1 || jqExca[i+1] != state {
-			i += 2
-		}
+/* unknown char */
 
-		// Look for tokens that we accept or reduce.
-		for i += 2; jqExca[i] >= 0; i += 2 {
-			tok := jqExca[i]
-			if tok < TOKSTART || jqExca[i+1] == 0 {
-				continue
-			}
-			if len(expected) == cap(expected) {
-				return res
-			}
-			expected = append(expected, tok)
-		}
+func jqParse(jqlex jqLexer) int { _ = "STUB: not implemented"; return 0 }
 
-		// If the default action is to accept or reduce, give up.
-		if jqExca[i+1] != 0 {
-			return res
-		}
-	}
+func (jqrcvr *jqParserImpl) Parse(jqlex jqLexer) int { _ = "STUB: not implemented"; return 0 }
 
-	for i, tok := range expected {
-		if i == 0 {
-			res += ", expecting "
-		} else {
-			res += " or "
-		}
-		res += jqTokname(tok)
-	}
-	return res
-}
+// silence set and not used
 
-func jqlex1(lex jqLexer, lval *jqSymType) (char, token int) {
-	token = 0
-	char = lex.Lex(lval)
-	if char <= 0 {
-		token = jqTok1[0]
-		goto out
-	}
-	if char < len(jqTok1) {
-		token = jqTok1[char]
-		goto out
-	}
-	if char >= jqPrivate {
-		if char < jqPrivate+len(jqTok2) {
-			token = jqTok2[char-jqPrivate]
-			goto out
-		}
-	}
-	for i := 0; i < len(jqTok3); i += 2 {
-		token = jqTok3[i+0]
-		if token == char {
-			token = jqTok3[i+1]
-			goto out
-		}
-	}
+/* number of errors */
+/* error recovery flag */
 
-out:
-	if token == 0 {
-		token = jqTok2[1] /* unknown char */
-	}
-	if jqDebug >= 3 {
-		__yyfmt__.Printf("lex %s(%d)\n", jqTokname(token), uint(char))
-	}
-	return char, token
-}
+// jqrcvr.char translated into internal numbering
 
-func jqParse(jqlex jqLexer) int {
-	return jqNewParser().Parse(jqlex)
-}
+// Make sure we report no lookahead when not parsing.
 
-func (jqrcvr *jqParserImpl) Parse(jqlex jqLexer) int {
-	var jqn int
-	var jqVAL jqSymType
-	var jqDollar []jqSymType
-	_ = jqDollar // silence set and not used
-	jqS := jqrcvr.stack[:]
+/* put a state and value onto the stack */
 
-	Nerrs := 0   /* number of errors */
-	Errflag := 0 /* error recovery flag */
-	jqstate := 0
-	jqrcvr.char = -1
-	jqtoken := -1 // jqrcvr.char translated into internal numbering
-	defer func() {
-		// Make sure we report no lookahead when not parsing.
-		jqstate = -1
-		jqrcvr.char = -1
-		jqtoken = -1
-	}()
-	jqp := -1
-	goto jqstack
+/* simple state */
 
-ret0:
-	return 0
+/* valid shift */
 
-ret1:
-	return 1
+/* default state action */
 
-jqstack:
-	/* put a state and value onto the stack */
-	if jqDebug >= 4 {
-		__yyfmt__.Printf("char %v in %v\n", jqTokname(jqtoken), jqStatname(jqstate))
-	}
+/* look through exception table */
 
-	jqp++
-	if jqp >= len(jqS) {
-		nyys := make([]jqSymType, len(jqS)*2)
-		copy(nyys, jqS)
-		jqS = nyys
-	}
-	jqS[jqp] = jqVAL
-	jqS[jqp].yys = jqstate
+/* error ... attempt to resume parsing */
 
-jqnewstate:
-	jqn = jqPact[jqstate]
-	if jqn <= jqFlag {
-		goto jqdefault /* simple state */
-	}
-	if jqrcvr.char < 0 {
-		jqrcvr.char, jqtoken = jqlex1(jqlex, &jqrcvr.lval)
-	}
-	jqn += jqtoken
-	if jqn < 0 || jqn >= jqLast {
-		goto jqdefault
-	}
-	jqn = jqAct[jqn]
-	if jqChk[jqn] == jqtoken { /* valid shift */
-		jqrcvr.char = -1
-		jqtoken = -1
-		jqVAL = jqrcvr.lval
-		jqstate = jqn
-		if Errflag > 0 {
-			Errflag--
-		}
-		goto jqstack
-	}
+/* brand new error */
 
-jqdefault:
-	/* default state action */
-	jqn = jqDef[jqstate]
-	if jqn == -2 {
-		if jqrcvr.char < 0 {
-			jqrcvr.char, jqtoken = jqlex1(jqlex, &jqrcvr.lval)
-		}
+/* incompletely recovered error ... try again */
 
-		/* look through exception table */
-		xi := 0
-		for {
-			if jqExca[xi+0] == -1 && jqExca[xi+1] == jqstate {
-				break
-			}
-			xi += 2
-		}
-		for xi += 2; ; xi += 2 {
-			jqn = jqExca[xi+0]
-			if jqn < 0 || jqn == jqtoken {
-				break
-			}
-		}
-		jqn = jqExca[xi+1]
-		if jqn < 0 {
-			goto ret0
-		}
-	}
-	if jqn == 0 {
-		/* error ... attempt to resume parsing */
-		switch Errflag {
-		case 0: /* brand new error */
-			jqlex.Error(jqErrorMessage(jqstate, jqtoken))
-			Nerrs++
-			if jqDebug >= 1 {
-				__yyfmt__.Printf("%s", jqStatname(jqstate))
-				__yyfmt__.Printf(" saw %s\n", jqTokname(jqtoken))
-			}
-			fallthrough
+/* find a state where "error" is a legal shift action */
 
-		case 1, 2: /* incompletely recovered error ... try again */
-			Errflag = 3
+/* simulate a shift of "error" */
 
-			/* find a state where "error" is a legal shift action */
-			for jqp >= 0 {
-				jqn = jqPact[jqS[jqp].yys] + jqErrCode
-				if jqn >= 0 && jqn < jqLast {
-					jqstate = jqAct[jqn] /* simulate a shift of "error" */
-					if jqChk[jqstate] == jqErrCode {
-						goto jqstack
-					}
-				}
+/* the current p has no shift on "error", pop stack */
 
-				/* the current p has no shift on "error", pop stack */
-				if jqDebug >= 2 {
-					__yyfmt__.Printf("error recovery pops state %d\n", jqS[jqp].yys)
-				}
-				jqp--
-			}
-			/* there is no state on the stack with an error shift ... abort */
-			goto ret1
+/* there is no state on the stack with an error shift ... abort */
 
-		case 3: /* no shift yet; clobber input char */
-			if jqDebug >= 2 {
-				__yyfmt__.Printf("error recovery discards %s\n", jqTokname(jqtoken))
-			}
-			if jqtoken == jqEofCode {
-				goto ret1
-			}
-			jqrcvr.char = -1
-			jqtoken = -1
-			goto jqnewstate /* try again in the same state */
-		}
-	}
+/* no shift yet; clobber input char */
 
-	/* reduction by production jqn */
-	if jqDebug >= 2 {
-		__yyfmt__.Printf("reduce %v in:\n\t%v\n", jqn, jqStatname(jqstate))
-	}
+/* try again in the same state */
 
-	jqnt := jqn
-	jqpt := jqp
-	_ = jqpt // guard against "declared and not used"
+/* reduction by production jqn */
 
-	jqp -= jqR2[jqn]
-	// jqp is now the index of $0. Perform the default action. Iff the
-	// reduced production is ε, $1 is possibly out of range.
-	if jqp+1 >= len(jqS) {
-		nyys := make([]jqSymType, len(jqS)*2)
-		copy(nyys, jqS)
-		jqS = nyys
-	}
-	jqVAL = jqS[jqp+1]
+// guard against "declared and not used"
 
-	/* consult goto table to find next state */
-	jqn = jqR1[jqn]
-	jqg := jqPgo[jqn]
-	jqj := jqg + jqS[jqp].yys + 1
+// jqp is now the index of $0. Perform the default action. Iff the
+// reduced production is ε, $1 is possibly out of range.
 
-	if jqj >= jqLast {
-		jqstate = jqAct[jqg]
-	} else {
-		jqstate = jqAct[jqj]
-		if jqChk[jqstate] != -jqn {
-			jqstate = jqAct[jqg]
-		}
-	}
-	// dummy call; replaced with literal code
-	switch jqnt {
+/* consult goto table to find next state */
 
-	case 1:
-		jqDollar = jqS[jqpt-0 : jqpt+1]
+// dummy call; replaced with literal code
+
 //line lib/json/query_parser.y:33
-		{
-			jqVAL.expression = nil
-			jqlex.(*QueryLexer).query = jqVAL.expression
-		}
-	case 2:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:38
-		{
-			jqVAL.expression = jqDollar[1].expression
-			jqlex.(*QueryLexer).query = jqVAL.expression
-		}
-	case 3:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:45
-		{
-			jqVAL.expression = jqDollar[1].element
-		}
-	case 4:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:49
-		{
-			jqVAL.expression = jqDollar[1].expression
-		}
-	case 5:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:53
-		{
-			jqVAL.expression = jqDollar[1].expression
-		}
-	case 6:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:57
-		{
-			jqVAL.expression = jqDollar[1].expression
-		}
-	case 7:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:63
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal}
-		}
-	case 8:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:67
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[3].element}
-		}
-	case 9:
-		jqDollar = jqS[jqpt-2 : jqpt+1]
+
 //line lib/json/query_parser.y:71
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[2].expression}
-		}
-	case 10:
-		jqDollar = jqS[jqpt-2 : jqpt+1]
+
 //line lib/json/query_parser.y:75
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[2].expression}
-		}
-	case 11:
-		jqDollar = jqS[jqpt-2 : jqpt+1]
+
 //line lib/json/query_parser.y:79
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[2].expression}
-		}
-	case 12:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:85
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal}
-		}
-	case 13:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:89
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[3].element}
-		}
-	case 14:
-		jqDollar = jqS[jqpt-2 : jqpt+1]
+
 //line lib/json/query_parser.y:93
-		{
-			jqVAL.element = Element{Label: jqDollar[1].token.Literal, Child: jqDollar[2].expression}
-		}
-	case 15:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:99
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i}
-		}
-	case 16:
-		jqDollar = jqS[jqpt-5 : jqpt+1]
+
 //line lib/json/query_parser.y:104
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[5].element}
-		}
-	case 17:
-		jqDollar = jqS[jqpt-4 : jqpt+1]
+
 //line lib/json/query_parser.y:109
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[4].expression}
-		}
-	case 18:
-		jqDollar = jqS[jqpt-4 : jqpt+1]
+
 //line lib/json/query_parser.y:114
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[4].expression}
-		}
-	case 19:
-		jqDollar = jqS[jqpt-4 : jqpt+1]
+
 //line lib/json/query_parser.y:119
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[4].expression}
-		}
-	case 20:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:126
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i}
-		}
-	case 21:
-		jqDollar = jqS[jqpt-5 : jqpt+1]
+
 //line lib/json/query_parser.y:131
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[5].element}
-		}
-	case 22:
-		jqDollar = jqS[jqpt-4 : jqpt+1]
+
 //line lib/json/query_parser.y:136
-		{
-			i, _ := strconv.Atoi(jqDollar[2].token.Literal)
-			jqVAL.expression = ArrayItem{Index: i, Child: jqDollar[4].expression}
-		}
-	case 23:
-		jqDollar = jqS[jqpt-2 : jqpt+1]
+
 //line lib/json/query_parser.y:143
-		{
-			jqVAL.expression = RowValueExpr{}
-		}
-	case 24:
-		jqDollar = jqS[jqpt-4 : jqpt+1]
+
 //line lib/json/query_parser.y:147
-		{
-			jqVAL.expression = RowValueExpr{Child: jqDollar[4].element}
-		}
-	case 25:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:151
-		{
-			jqVAL.expression = RowValueExpr{Child: jqDollar[3].expression}
-		}
-	case 26:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:157
-		{
-			jqVAL.expression = TableExpr{Fields: jqDollar[2].fields}
-		}
-	case 27:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:163
-		{
-			jqVAL.field = FieldExpr{Element: jqDollar[1].element}
-		}
-	case 28:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:167
-		{
-			jqVAL.field = FieldExpr{Element: jqDollar[1].element, Alias: jqDollar[3].token.Literal}
-		}
-	case 29:
-		jqDollar = jqS[jqpt-0 : jqpt+1]
+
 //line lib/json/query_parser.y:173
-		{
-			jqVAL.fields = nil
-		}
-	case 30:
-		jqDollar = jqS[jqpt-1 : jqpt+1]
+
 //line lib/json/query_parser.y:177
-		{
-			jqVAL.fields = []FieldExpr{jqDollar[1].field}
-		}
-	case 31:
-		jqDollar = jqS[jqpt-3 : jqpt+1]
+
 //line lib/json/query_parser.y:181
-		{
-			jqVAL.fields = append([]FieldExpr{jqDollar[1].field}, jqDollar[3].fields...)
-		}
-	}
-	goto jqstack /* stack new state and value */
-}
+
+/* stack new state and value */

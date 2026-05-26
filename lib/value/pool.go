@@ -28,33 +28,12 @@ var datetimePool = &sync.Pool{
 	},
 }
 
-func getString() *String {
-	return stringPool.Get().(*String)
-}
+func getString() *String { _ = "STUB: not implemented"; return nil }
 
-func getInteger() *Integer {
-	return integerPool.Get().(*Integer)
-}
+func getInteger() *Integer { _ = "STUB: not implemented"; return nil }
 
-func getFloat() *Float {
-	return floatPool.Get().(*Float)
-}
+func getFloat() *Float { _ = "STUB: not implemented"; return nil }
 
-func getDatetime() *Datetime {
-	return datetimePool.Get().(*Datetime)
-}
+func getDatetime() *Datetime { _ = "STUB: not implemented"; return nil }
 
-func Discard(p Primary) {
-	if p != nil {
-		switch p.(type) {
-		case *String:
-			stringPool.Put(p)
-		case *Integer:
-			integerPool.Put(p)
-		case *Float:
-			floatPool.Put(p)
-		case *Datetime:
-			datetimePool.Put(p)
-		}
-	}
-}
+func Discard(p Primary) { _ = "STUB: not implemented"; return }

@@ -1,8 +1,6 @@
 package query
 
 import (
-	"strings"
-
 	"github.com/mithrandie/csvq/lib/option"
 	"github.com/mithrandie/csvq/lib/parser"
 )
@@ -12,59 +10,41 @@ type PreparedStatementMap struct {
 }
 
 func NewPreparedStatementMap() PreparedStatementMap {
-	return PreparedStatementMap{
-		NewSyncMap(),
-	}
+	_ = "STUB: not implemented"
+	return *new(PreparedStatementMap)
 }
 
 func (m PreparedStatementMap) Store(name string, statement *PreparedStatement) {
-	m.store(strings.ToUpper(name), statement)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (m PreparedStatementMap) LoadDirect(name string) (interface{}, bool) {
-	return m.load(strings.ToUpper(name))
-}
-
-func (m PreparedStatementMap) Load(name string) (*PreparedStatement, bool) {
-	if v, ok := m.load(strings.ToUpper(name)); ok {
-		return v.(*PreparedStatement), true
-	}
+	_ = "STUB: not implemented"
 	return nil, false
 }
 
-func (m PreparedStatementMap) Delete(name string) {
-	m.delete(strings.ToUpper(name))
+func (m PreparedStatementMap) Load(name string) (*PreparedStatement, bool) {
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
-func (m PreparedStatementMap) Exists(name string) bool {
-	return m.exists(strings.ToUpper(name))
-}
+func (m PreparedStatementMap) Delete(name string) { _ = "STUB: not implemented"; return }
+
+func (m PreparedStatementMap) Exists(name string) bool { _ = "STUB: not implemented"; return false }
 
 func (m PreparedStatementMap) Prepare(flags *option.Flags, expr parser.StatementPreparation) error {
-	stmt, err := NewPreparedStatement(flags, expr)
-	if err != nil {
-		return err
-	}
-
-	if m.Exists(expr.Name.Literal) {
-		return NewDuplicateStatementNameError(expr.Name)
-	}
-	m.Store(expr.Name.Literal, stmt)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (m PreparedStatementMap) Get(name parser.Identifier) (*PreparedStatement, error) {
-	if stmt, ok := m.Load(name.Literal); ok {
-		return stmt, nil
-	}
-	return nil, NewStatementNotExistError(name)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (m PreparedStatementMap) Dispose(expr parser.DisposeStatement) error {
-	if !m.Exists(expr.Name.Literal) {
-		return NewStatementNotExistError(expr.Name)
-	}
-	m.Delete(expr.Name.Literal)
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -76,17 +56,8 @@ type PreparedStatement struct {
 }
 
 func NewPreparedStatement(flags *option.Flags, expr parser.StatementPreparation) (*PreparedStatement, error) {
-	statements, holderNum, err := parser.Parse(expr.Statement.Raw(), expr.Name.Literal, true, flags.AnsiQuotes)
-	if err != nil {
-		return nil, NewPreparedStatementSyntaxError(err.(*parser.SyntaxError))
-	}
-
-	return &PreparedStatement{
-		Name:            expr.Name.Literal,
-		StatementString: expr.Statement.Raw(),
-		Statements:      statements,
-		HolderNumber:    holderNum,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 type ReplaceValues struct {
@@ -95,18 +66,6 @@ type ReplaceValues struct {
 }
 
 func NewReplaceValues(replace []parser.ReplaceValue) *ReplaceValues {
-	values := make([]parser.QueryExpression, 0, len(replace))
-	names := make(map[string]int, len(replace))
-
-	for i := range replace {
-		if 0 < len(replace[i].Name.Literal) {
-			names[replace[i].Name.Literal] = i
-		}
-		values = append(values, replace[i].Value)
-	}
-
-	return &ReplaceValues{
-		Values: values,
-		Names:  names,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }

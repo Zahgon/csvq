@@ -1,13 +1,6 @@
 package option
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
-	"os"
-	"path/filepath"
-	"runtime"
-	"strings"
 	"time"
 
 	"github.com/mithrandie/go-text"
@@ -123,9 +116,7 @@ var FormatLiteral = map[Format]string{
 	TEXT:  "TEXT",
 }
 
-func (f Format) String() string {
-	return FormatLiteral[f]
-}
+func (f Format) String() string { _ = "STUB: not implemented"; return "" }
 
 var ImportFormats = []Format{
 	CSV,
@@ -143,7 +134,8 @@ var JsonEscapeTypeLiteral = map[txjson.EscapeType]string{
 }
 
 func JsonEscapeTypeToString(escapeType txjson.EscapeType) string {
-	return JsonEscapeTypeLiteral[escapeType]
+	_ = "STUB: not implemented"
+	return ""
 }
 
 const (
@@ -172,30 +164,11 @@ type ImportOptions struct {
 }
 
 func (ops ImportOptions) Copy() ImportOptions {
-	var dp []int
-	if ops.DelimiterPositions != nil {
-		dp = make([]int, len(ops.DelimiterPositions))
-		copy(dp, ops.DelimiterPositions)
-	}
-
-	ret := ops
-	ret.DelimiterPositions = dp
-	return ret
+	_ = "STUB: not implemented"
+	return *new(ImportOptions)
 }
 
-func NewImportOptions() ImportOptions {
-	return ImportOptions{
-		Format:             CSV,
-		Delimiter:          ',',
-		AllowUnevenFields:  false,
-		DelimiterPositions: nil,
-		SingleLine:         false,
-		JsonQuery:          "",
-		Encoding:           text.AUTO,
-		NoHeader:           false,
-		WithoutNull:        false,
-	}
-}
+func NewImportOptions() ImportOptions { _ = "STUB: not implemented"; return *new(ImportOptions) }
 
 type ExportOptions struct {
 	StripEndingLineBreak bool
@@ -220,37 +193,11 @@ type ExportOptions struct {
 }
 
 func (ops ExportOptions) Copy() ExportOptions {
-	var dp []int
-	if ops.DelimiterPositions != nil {
-		dp = make([]int, len(ops.DelimiterPositions))
-		copy(dp, ops.DelimiterPositions)
-	}
-
-	ret := ops
-	ret.DelimiterPositions = dp
-	return ret
+	_ = "STUB: not implemented"
+	return *new(ExportOptions)
 }
 
-func NewExportOptions() ExportOptions {
-	return ExportOptions{
-		StripEndingLineBreak: false,
-		Format:               TEXT,
-		Encoding:             text.UTF8,
-		Delimiter:            ',',
-		DelimiterPositions:   nil,
-		SingleLine:           false,
-		WithoutHeader:        false,
-		LineBreak:            text.LF,
-		EncloseAll:           false,
-		JsonEscape:           txjson.Backslash,
-		PrettyPrint:          false,
-		ScientificNotation:   false,
-		EastAsianEncoding:    false,
-		CountDiacriticalSign: false,
-		CountFormatCode:      false,
-		Color:                false,
-	}
-}
+func NewExportOptions() ExportOptions { _ = "STUB: not implemented"; return *new(ExportOptions) }
 
 type Flags struct {
 	// Common Settings
@@ -277,376 +224,77 @@ type Flags struct {
 	defaultTimeLocation *time.Location
 }
 
-func GetDefaultNumberOfCPU() int {
-	n := runtime.NumCPU() / 2
-	if n < 1 {
-		n = 1
-	}
-	return n
-}
+func GetDefaultNumberOfCPU() int { _ = "STUB: not implemented"; return 0 }
 
-func NewFlags(env *Environment) (*Flags, error) {
-	var datetimeFormat []string
-	var location = "Local"
-	var AnsiQuotes = false
+func NewFlags(env *Environment) (*Flags, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	if env != nil {
-		datetimeFormat = make([]string, 0, len(env.DatetimeFormat))
-		for _, v := range env.DatetimeFormat {
-			datetimeFormat = AppendStrIfNotExist(datetimeFormat, v)
-		}
+func (f *Flags) GetTimeLocation() *time.Location { _ = "STUB: not implemented"; return nil }
 
-		if env.Timezone != nil {
-			location = *env.Timezone
-		}
+func (f *Flags) SetRepository(s string) error { _ = "STUB: not implemented"; return nil }
 
-		if env.AnsiQuotes != nil {
-			AnsiQuotes = *env.AnsiQuotes
-		}
-	} else {
-		datetimeFormat = make([]string, 0, 4)
-	}
+func (f *Flags) SetLocation(s string) error { _ = "STUB: not implemented"; return nil }
 
-	defaultTimeLocation, err := GetLocation(location)
-	if err != nil {
-		return nil, err
-	}
+func (f *Flags) SetDatetimeFormat(s string) { _ = "STUB: not implemented"; return }
 
-	return &Flags{
-		Repository:          "",
-		Location:            location,
-		DatetimeFormat:      datetimeFormat,
-		AnsiQuotes:          AnsiQuotes,
-		StrictEqual:         false,
-		WaitTimeout:         10,
-		ImportOptions:       NewImportOptions(),
-		ExportOptions:       NewExportOptions(),
-		Quiet:               false,
-		LimitRecursion:      1000,
-		CPU:                 GetDefaultNumberOfCPU(),
-		Stats:               false,
-		defaultTimeLocation: defaultTimeLocation,
-	}, nil
-}
+func (f *Flags) SetAnsiQuotes(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) GetTimeLocation() *time.Location {
-	return f.defaultTimeLocation
-}
+func (f *Flags) SetStrictEqual(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetRepository(s string) error {
-	if len(s) < 1 {
-		f.Repository = ""
-		return nil
-	}
+func (f *Flags) SetWaitTimeout(t float64) { _ = "STUB: not implemented"; return }
 
-	path, err := filepath.Abs(s)
-	if err != nil {
-		path = s
-	}
+func (f *Flags) SetImportFormat(s string) error { _ = "STUB: not implemented"; return nil }
 
-	stat, err := os.Stat(path)
-	if err != nil {
-		return errors.New("repository does not exist")
-	}
-	if !stat.IsDir() {
-		return errors.New("repository must be a directory path")
-	}
+func (f *Flags) SetDelimiter(s string) error { _ = "STUB: not implemented"; return nil }
 
-	f.Repository = path
-	return nil
-}
+func (f *Flags) SetAllowUnevenFields(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetLocation(s string) error {
-	if len(s) < 1 || strings.EqualFold(s, "Local") {
-		s = "Local"
-	} else if strings.EqualFold(s, "UTC") {
-		s = "UTC"
-	}
+func (f *Flags) SetDelimiterPositions(s string) error { _ = "STUB: not implemented"; return nil }
 
-	l, err := GetLocation(s)
-	if err != nil {
-		return err
-	}
+func (f *Flags) SetJsonQuery(s string) { _ = "STUB: not implemented"; return }
 
-	f.Location = s
-	f.defaultTimeLocation = l
-	return nil
-}
+func (f *Flags) SetEncoding(s string) error { _ = "STUB: not implemented"; return nil }
 
-func (f *Flags) SetDatetimeFormat(s string) {
-	if len(s) < 1 {
-		return
-	}
+func (f *Flags) SetNoHeader(b bool) { _ = "STUB: not implemented"; return }
 
-	var formats []string
-	if err := json.Unmarshal([]byte(s), &formats); err == nil {
-		for _, v := range formats {
-			f.DatetimeFormat = AppendStrIfNotExist(f.DatetimeFormat, v)
-		}
-	} else {
-		f.DatetimeFormat = append(f.DatetimeFormat, s)
-	}
-}
-
-func (f *Flags) SetAnsiQuotes(b bool) {
-	f.AnsiQuotes = b
-}
-
-func (f *Flags) SetStrictEqual(b bool) {
-	f.StrictEqual = b
-}
-
-func (f *Flags) SetWaitTimeout(t float64) {
-	if t < 0 {
-		t = 0
-	}
-
-	f.WaitTimeout = t
-	return
-}
-
-func (f *Flags) SetImportFormat(s string) error {
-	fm, _, err := ParseFormat(s, f.ExportOptions.JsonEscape)
-	if err != nil {
-		return errors.New("import format must be one of CSV|TSV|FIXED|JSON|JSONL|LTSV")
-	}
-
-	switch fm {
-	case CSV, TSV, FIXED, JSON, JSONL, LTSV:
-		f.ImportOptions.Format = fm
-		return nil
-	}
-
-	return errors.New("import format must be one of CSV|TSV|FIXED|JSON|JSONL|LTSV")
-}
-
-func (f *Flags) SetDelimiter(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
-
-	delimiter, err := ParseDelimiter(s)
-	if err != nil {
-		return err
-	}
-
-	f.ImportOptions.Delimiter = delimiter
-	return nil
-}
-
-func (f *Flags) SetAllowUnevenFields(b bool) {
-	f.ImportOptions.AllowUnevenFields = b
-}
-
-func (f *Flags) SetDelimiterPositions(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
-	delimiterPositions, singleLine, err := ParseDelimiterPositions(s)
-	if err != nil {
-		return err
-	}
-
-	f.ImportOptions.DelimiterPositions = delimiterPositions
-	f.ImportOptions.SingleLine = singleLine
-	return nil
-}
-
-func (f *Flags) SetJsonQuery(s string) {
-	f.ImportOptions.JsonQuery = TrimSpace(s)
-}
-
-func (f *Flags) SetEncoding(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
-
-	encoding, err := ParseEncoding(s)
-	if err != nil {
-		return err
-	}
-
-	f.ImportOptions.Encoding = encoding
-	return nil
-}
-
-func (f *Flags) SetNoHeader(b bool) {
-	f.ImportOptions.NoHeader = b
-}
-
-func (f *Flags) SetWithoutNull(b bool) {
-	f.ImportOptions.WithoutNull = b
-}
+func (f *Flags) SetWithoutNull(b bool) { _ = "STUB: not implemented"; return }
 
 func (f *Flags) SetFormat(s string, outfile string, canOutputToPipe bool) error {
-	if len(s) < 1 {
-		if len(outfile) < 1 {
-			if canOutputToPipe {
-				f.ExportOptions.Format = CSV
-			} else {
-				f.ExportOptions.Format = TEXT
-			}
-			return nil
-		}
-
-		switch strings.ToLower(filepath.Ext(outfile)) {
-		case CsvExt:
-			f.ExportOptions.Format = CSV
-		case TsvExt:
-			f.ExportOptions.Format = TSV
-		case JsonExt:
-			f.ExportOptions.Format = JSON
-		case JsonlExt:
-			f.ExportOptions.Format = JSONL
-		case LtsvExt:
-			f.ExportOptions.Format = LTSV
-		case GfmExt:
-			f.ExportOptions.Format = GFM
-		case OrgExt:
-			f.ExportOptions.Format = ORG
-		default:
-			f.ExportOptions.Format = TEXT
-		}
-		return nil
-	}
-
-	fm, escape, err := ParseFormat(s, f.ExportOptions.JsonEscape)
-	if err != nil {
-		return err
-	}
-
-	f.ExportOptions.Format = fm
-	f.ExportOptions.JsonEscape = escape
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func (f *Flags) SetWriteEncoding(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
+func (f *Flags) SetWriteEncoding(s string) error { _ = "STUB: not implemented"; return nil }
 
-	encoding, err := ParseEncoding(s)
-	if err != nil || encoding == text.AUTO {
-		return errors.New("write-encoding must be one of UTF8|UTF8M|UTF16|UTF16BE|UTF16LE|UTF16BEM|UTF16LEM|SJIS")
-	}
+func (f *Flags) SetWriteDelimiter(s string) error { _ = "STUB: not implemented"; return nil }
 
-	f.ExportOptions.Encoding = encoding
-	return nil
-}
+func (f *Flags) SetWriteDelimiterPositions(s string) error { _ = "STUB: not implemented"; return nil }
 
-func (f *Flags) SetWriteDelimiter(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
+func (f *Flags) SetWithoutHeader(b bool) { _ = "STUB: not implemented"; return }
 
-	delimiter, err := ParseDelimiter(s)
-	if err != nil {
-		return errors.New("write-delimiter must be one character")
-	}
+func (f *Flags) SetLineBreak(s string) error { _ = "STUB: not implemented"; return nil }
 
-	f.ExportOptions.Delimiter = delimiter
-	return nil
-}
+func (f *Flags) SetJsonEscape(s string) error { _ = "STUB: not implemented"; return nil }
 
-func (f *Flags) SetWriteDelimiterPositions(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
-	delimiterPositions, singleLine, err := ParseDelimiterPositions(s)
-	if err != nil {
-		return errors.New(fmt.Sprintf("write-delimiter-positions must be %q or a JSON array of integers", DelimitAutomatically))
-	}
+func (f *Flags) SetPrettyPrint(b bool) { _ = "STUB: not implemented"; return }
 
-	f.ExportOptions.DelimiterPositions = delimiterPositions
-	f.ExportOptions.SingleLine = singleLine
-	return nil
-}
+func (f *Flags) SetScientificNotation(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetWithoutHeader(b bool) {
-	f.ExportOptions.WithoutHeader = b
-}
+func (f *Flags) SetStripEndingLineBreak(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetLineBreak(s string) error {
-	if len(s) < 1 {
-		return nil
-	}
+func (f *Flags) SetEncloseAll(b bool) { _ = "STUB: not implemented"; return }
 
-	lb, err := ParseLineBreak(s)
-	if err != nil {
-		return err
-	}
+func (f *Flags) SetColor(b bool) { _ = "STUB: not implemented"; return }
 
-	f.ExportOptions.LineBreak = lb
-	return nil
-}
+func (f *Flags) SetEastAsianEncoding(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetJsonEscape(s string) error {
-	var escape txjson.EscapeType
-	var err error
+func (f *Flags) SetCountDiacriticalSign(b bool) { _ = "STUB: not implemented"; return }
 
-	if escape, err = ParseJsonEscapeType(s); err != nil {
-		return err
-	}
+func (f *Flags) SetCountFormatCode(b bool) { _ = "STUB: not implemented"; return }
 
-	f.ExportOptions.JsonEscape = escape
-	return nil
-}
+func (f *Flags) SetQuiet(b bool) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetPrettyPrint(b bool) {
-	f.ExportOptions.PrettyPrint = b
-}
+func (f *Flags) SetLimitRecursion(i int64) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetScientificNotation(b bool) {
-	f.ExportOptions.ScientificNotation = b
-}
+func (f *Flags) SetCPU(i int) { _ = "STUB: not implemented"; return }
 
-func (f *Flags) SetStripEndingLineBreak(b bool) {
-	f.ExportOptions.StripEndingLineBreak = b
-}
-
-func (f *Flags) SetEncloseAll(b bool) {
-	f.ExportOptions.EncloseAll = b
-}
-
-func (f *Flags) SetColor(b bool) {
-	f.ExportOptions.Color = b
-}
-
-func (f *Flags) SetEastAsianEncoding(b bool) {
-	f.ExportOptions.EastAsianEncoding = b
-}
-
-func (f *Flags) SetCountDiacriticalSign(b bool) {
-	f.ExportOptions.CountDiacriticalSign = b
-}
-
-func (f *Flags) SetCountFormatCode(b bool) {
-	f.ExportOptions.CountFormatCode = b
-}
-
-func (f *Flags) SetQuiet(b bool) {
-	f.Quiet = b
-}
-
-func (f *Flags) SetLimitRecursion(i int64) {
-	if i < 0 {
-		i = -1
-	}
-	f.LimitRecursion = i
-}
-
-func (f *Flags) SetCPU(i int) {
-	if i < 1 {
-		i = 1
-	}
-
-	if runtime.NumCPU() < i {
-		i = runtime.NumCPU()
-	}
-
-	f.CPU = i
-}
-
-func (f *Flags) SetStats(b bool) {
-	f.Stats = b
-}
+func (f *Flags) SetStats(b bool) { _ = "STUB: not implemented"; return }

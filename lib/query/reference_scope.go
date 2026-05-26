@@ -2,8 +2,6 @@ package query
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -22,15 +20,9 @@ var blockScopePool = sync.Pool{
 	},
 }
 
-func GetBlockScope() BlockScope {
-	scope := blockScopePool.Get().(BlockScope)
-	return scope
-}
+func GetBlockScope() BlockScope { _ = "STUB: not implemented"; return *new(BlockScope) }
 
-func PutBlockScope(scope BlockScope) {
-	scope.Clear()
-	blockScopePool.Put(scope)
-}
+func PutBlockScope(scope BlockScope) { _ = "STUB: not implemented"; return }
 
 var nodeScopePool = sync.Pool{
 	New: func() interface{} {
@@ -38,15 +30,9 @@ var nodeScopePool = sync.Pool{
 	},
 }
 
-func GetNodeScope() NodeScope {
-	scope := nodeScopePool.Get().(NodeScope)
-	return scope
-}
+func GetNodeScope() NodeScope { _ = "STUB: not implemented"; return *new(NodeScope) }
 
-func PutNodeScope(scope NodeScope) {
-	scope.Clear()
-	nodeScopePool.Put(scope)
-}
+func PutNodeScope(scope NodeScope) { _ = "STUB: not implemented"; return }
 
 type BlockScope struct {
 	Variables       VariableMap
@@ -55,38 +41,18 @@ type BlockScope struct {
 	Functions       UserDefinedFunctionMap
 }
 
-func NewBlockScope() BlockScope {
-	return BlockScope{
-		Variables:       NewVariableMap(),
-		TemporaryTables: NewViewMap(),
-		Cursors:         NewCursorMap(),
-		Functions:       NewUserDefinedFunctionMap(),
-	}
-}
+func NewBlockScope() BlockScope { _ = "STUB: not implemented"; return *new(BlockScope) }
 
-func (scope BlockScope) Clear() {
-	scope.Variables.Clear()
-	scope.TemporaryTables.Clear()
-	scope.Cursors.Clear()
-	scope.Functions.Clear()
-}
+func (scope BlockScope) Clear() { _ = "STUB: not implemented"; return }
 
 type NodeScope struct {
 	inlineTables InlineTableMap
 	aliases      AliasMap
 }
 
-func NewNodeScope() NodeScope {
-	return NodeScope{
-		inlineTables: make(InlineTableMap),
-		aliases:      make(AliasMap),
-	}
-}
+func NewNodeScope() NodeScope { _ = "STUB: not implemented"; return *new(NodeScope) }
 
-func (scope NodeScope) Clear() {
-	scope.inlineTables.Clear()
-	scope.aliases.Clear()
-}
+func (scope NodeScope) Clear() { _ = "STUB: not implemented"; return }
 
 type ReferenceRecord struct {
 	view        *View
@@ -96,16 +62,11 @@ type ReferenceRecord struct {
 }
 
 func NewReferenceRecord(view *View, recordIdx int, cacheLen int) ReferenceRecord {
-	return ReferenceRecord{
-		view:        view,
-		recordIndex: recordIdx,
-		cache:       NewFieldIndexCache(cacheLen, LimitToUseFieldIndexSliceChache),
-	}
+	_ = "STUB: not implemented"
+	return *new(ReferenceRecord)
 }
 
-func (r *ReferenceRecord) IsInRange() bool {
-	return -1 < r.recordIndex && r.recordIndex < r.view.RecordLen()
-}
+func (r *ReferenceRecord) IsInRange() bool { _ = "STUB: not implemented"; return false }
 
 type FieldIndexCache struct {
 	limitToUseSlice int
@@ -115,44 +76,18 @@ type FieldIndexCache struct {
 }
 
 func NewFieldIndexCache(initCap int, limitToUseSlice int) *FieldIndexCache {
-	return &FieldIndexCache{
-		limitToUseSlice: limitToUseSlice,
-		m:               nil,
-		exprs:           make([]parser.QueryExpression, 0, initCap),
-		indices:         make([]int, 0, initCap),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (c *FieldIndexCache) Get(expr parser.QueryExpression) (int, bool) {
-	if c.m != nil {
-		idx, ok := c.m[expr]
-		return idx, ok
-	}
-
-	for i := range c.exprs {
-		if expr == c.exprs[i] {
-			return c.indices[i], true
-		}
-	}
-	return -1, false
+	_ = "STUB: not implemented"
+	return 0, false
 }
 
 func (c *FieldIndexCache) Add(expr parser.QueryExpression, idx int) {
-	if c.m == nil && c.limitToUseSlice <= len(c.exprs) {
-		c.m = make(map[parser.QueryExpression]int, c.limitToUseSlice*2)
-		for i := range c.exprs {
-			c.m[c.exprs[i]] = c.indices[i]
-		}
-		c.exprs = nil
-		c.indices = nil
-	}
-
-	if c.m == nil {
-		c.exprs = append(c.exprs, expr)
-		c.indices = append(c.indices, idx)
-	} else {
-		c.m[expr] = idx
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 type ReferenceScope struct {
@@ -171,555 +106,246 @@ type ReferenceScope struct {
 	RecursiveCount   *int64
 }
 
-func NewReferenceScope(tx *Transaction) *ReferenceScope {
-	return NewReferenceScopeWithBlock(tx, GetBlockScope())
-}
+func NewReferenceScope(tx *Transaction) *ReferenceScope { _ = "STUB: not implemented"; return nil }
 
 func NewReferenceScopeWithBlock(tx *Transaction, scope BlockScope) *ReferenceScope {
-	return &ReferenceScope{
-		Tx:     tx,
-		Blocks: []BlockScope{scope},
-		nodes:  nil,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) CreateScopeForRecordEvaluation(view *View, recordIndex int) *ReferenceScope {
-	records := make([]ReferenceRecord, len(rs.Records)+1)
-	records[0] = NewReferenceRecord(view, recordIndex, view.FieldLen())
-	for i := range rs.Records {
-		records[i+1] = rs.Records[i]
-	}
-	return rs.createScope(records)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) CreateScopeForSequentialEvaluation(view *View) *ReferenceScope {
-	return rs.CreateScopeForRecordEvaluation(view, -1)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) CreateScopeForAnalytics() *ReferenceScope {
-	records := make([]ReferenceRecord, len(rs.Records))
-	records[0] = NewReferenceRecord(rs.Records[0].view, -1, rs.Records[0].view.FieldLen())
-	for i := 1; i < len(rs.Records); i++ {
-		records[i] = rs.Records[i]
-	}
-	return rs.createScope(records)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) createScope(referenceRecords []ReferenceRecord) *ReferenceScope {
-	return &ReferenceScope{
-		Tx:               rs.Tx,
-		Blocks:           rs.Blocks,
-		nodes:            rs.nodes,
-		cachedFilePath:   rs.cachedFilePath,
-		now:              rs.now,
-		Records:          referenceRecords,
-		RecursiveTable:   rs.RecursiveTable,
-		RecursiveTmpView: rs.RecursiveTmpView,
-		RecursiveCount:   rs.RecursiveCount,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (rs *ReferenceScope) CreateChild() *ReferenceScope {
-	blocks := make([]BlockScope, len(rs.Blocks)+1)
-	blocks[0] = GetBlockScope()
-	for i := range rs.Blocks {
-		blocks[i+1] = rs.Blocks[i]
-	}
+func (rs *ReferenceScope) CreateChild() *ReferenceScope { _ = "STUB: not implemented"; return nil }
 
-	return &ReferenceScope{
-		Tx:               rs.Tx,
-		Blocks:           blocks,
-		nodes:            nil,
-		cachedFilePath:   rs.cachedFilePath,
-		now:              rs.now,
-		RecursiveTable:   rs.RecursiveTable,
-		RecursiveTmpView: rs.RecursiveTmpView,
-		RecursiveCount:   rs.RecursiveCount,
-	}
-}
+func (rs *ReferenceScope) CreateNode() *ReferenceScope { _ = "STUB: not implemented"; return nil }
 
-func (rs *ReferenceScope) CreateNode() *ReferenceScope {
-	nodes := make([]NodeScope, len(rs.nodes)+1)
-	nodes[0] = GetNodeScope()
-	for i := range rs.nodes {
-		nodes[i+1] = rs.nodes[i]
-	}
-
-	node := &ReferenceScope{
-		Tx:               rs.Tx,
-		Blocks:           rs.Blocks,
-		nodes:            nodes,
-		cachedFilePath:   rs.cachedFilePath,
-		now:              rs.now,
-		Records:          rs.Records,
-		RecursiveTable:   rs.RecursiveTable,
-		RecursiveTmpView: rs.RecursiveTmpView,
-		RecursiveCount:   rs.RecursiveCount,
-	}
-
-	if node.cachedFilePath == nil {
-		node.cachedFilePath = make(map[string]string)
-	}
-	if node.now.IsZero() {
-		node.now = option.Now(rs.Tx.Flags.GetTimeLocation())
-	}
-
-	return node
-}
-
-func (rs *ReferenceScope) Global() BlockScope {
-	return rs.Blocks[len(rs.Blocks)-1]
-}
+func (rs *ReferenceScope) Global() BlockScope { _ = "STUB: not implemented"; return *new(BlockScope) }
 
 func (rs *ReferenceScope) CurrentBlock() BlockScope {
-	return rs.Blocks[0]
+	_ = "STUB: not implemented"
+	return *new(BlockScope)
 }
 
-func (rs *ReferenceScope) ClearCurrentBlock() {
-	rs.CurrentBlock().Clear()
-}
+func (rs *ReferenceScope) ClearCurrentBlock() { _ = "STUB: not implemented"; return }
 
-func (rs *ReferenceScope) CloseCurrentBlock() {
-	PutBlockScope(rs.CurrentBlock())
-}
+func (rs *ReferenceScope) CloseCurrentBlock() { _ = "STUB: not implemented"; return }
 
-func (rs *ReferenceScope) CloseCurrentNode() {
-	PutNodeScope(rs.nodes[0])
-}
+func (rs *ReferenceScope) CloseCurrentNode() { _ = "STUB: not implemented"; return }
 
-func (rs *ReferenceScope) NextRecord() bool {
-	rs.Records[0].recordIndex++
-
-	if rs.Records[0].view.Len() <= rs.Records[0].recordIndex {
-		return false
-	}
-	return true
-}
+func (rs *ReferenceScope) NextRecord() bool { _ = "STUB: not implemented"; return false }
 
 func (rs *ReferenceScope) FilePathExists(identifier string) bool {
-	if rs.cachedFilePath == nil {
-		return false
-	}
-	_, ok := rs.cachedFilePath[identifier]
-	return ok
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (rs *ReferenceScope) StoreFilePath(identifier string, fpath string) {
-	if rs.cachedFilePath != nil {
-		rs.cachedFilePath[identifier] = fpath
-	}
-}
-
-func (rs *ReferenceScope) LoadFilePath(identifier string) (string, bool) {
-	if rs.cachedFilePath != nil {
-		if p, ok := rs.cachedFilePath[identifier]; ok {
-			return p, true
-		}
-	}
-	return "", false
-}
-
-func (rs *ReferenceScope) Now() time.Time {
-	if rs.now.IsZero() {
-		return option.Now(rs.Tx.Flags.GetTimeLocation())
-	}
-	return rs.now
-}
-
-func (rs *ReferenceScope) DeclareVariable(ctx context.Context, expr parser.VariableDeclaration) error {
-	return rs.Blocks[0].Variables.Declare(ctx, rs, expr)
-}
-
-func (rs *ReferenceScope) DeclareVariableDirectly(variable parser.Variable, val value.Primary) error {
-	return rs.Blocks[0].Variables.Add(variable, val)
-}
-
-func (rs *ReferenceScope) GetVariable(expr parser.Variable) (val value.Primary, err error) {
-	for i := range rs.Blocks {
-		if v, ok := rs.Blocks[i].Variables.Get(expr); ok {
-			return v, nil
-		}
-	}
-	return nil, NewUndeclaredVariableError(expr)
-}
-
-func (rs *ReferenceScope) SubstituteVariable(ctx context.Context, expr parser.VariableSubstitution) (val value.Primary, err error) {
-	val, err = Evaluate(ctx, rs, expr.Value)
-	if err != nil {
-		return
-	}
-
-	for i := range rs.Blocks {
-		if rs.Blocks[i].Variables.Set(expr.Variable, val) {
-			return
-		}
-	}
-	err = NewUndeclaredVariableError(expr.Variable)
+	_ = "STUB: not implemented"
 	return
 }
 
+func (rs *ReferenceScope) LoadFilePath(identifier string) (string, bool) {
+	_ = "STUB: not implemented"
+	return "", false
+}
+
+func (rs *ReferenceScope) Now() time.Time { _ = "STUB: not implemented"; return *new(time.Time) }
+
+func (rs *ReferenceScope) DeclareVariable(ctx context.Context, expr parser.VariableDeclaration) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+func (rs *ReferenceScope) DeclareVariableDirectly(variable parser.Variable, val value.Primary) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+func (rs *ReferenceScope) GetVariable(expr parser.Variable) (val value.Primary, err error) {
+	_ = "STUB: not implemented"
+	return *new(value.Primary), nil
+}
+
+func (rs *ReferenceScope) SubstituteVariable(ctx context.Context, expr parser.VariableSubstitution) (val value.Primary, err error) {
+	_ = "STUB: not implemented"
+	return *new(value.Primary), nil
+}
+
 func (rs *ReferenceScope) SubstituteVariableDirectly(variable parser.Variable, val value.Primary) (value.Primary, error) {
-	for i := range rs.Blocks {
-		if rs.Blocks[i].Variables.Set(variable, val) {
-			return val, nil
-		}
-	}
-	return nil, NewUndeclaredVariableError(variable)
+	_ = "STUB: not implemented"
+	return *new(value.Primary), nil
 }
 
 func (rs *ReferenceScope) DisposeVariable(expr parser.Variable) error {
-	for i := range rs.Blocks {
-		if rs.Blocks[i].Variables.Dispose(expr) {
-			return nil
-		}
-	}
-	return NewUndeclaredVariableError(expr)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) AllVariables() VariableMap {
-	all := NewVariableMap()
-	for i := range rs.Blocks {
-		rs.Blocks[i].Variables.Range(func(key, val interface{}) bool {
-			if !all.Exists(key.(string)) {
-				all.Store(key.(string), val.(value.Primary))
-			}
-			return true
-		})
-	}
-	return all
+	_ = "STUB: not implemented"
+	return *new(VariableMap)
 }
 
 func (rs *ReferenceScope) TemporaryTableExists(identifier string) bool {
-	identifier = strings.ToUpper(identifier)
-	for i := range rs.Blocks {
-		if rs.Blocks[i].TemporaryTables.Exists(identifier) {
-			return true
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 func (rs *ReferenceScope) GetTemporaryTable(identifier parser.Identifier) (*View, error) {
-	fileIdentifier := strings.ToUpper(identifier.Literal)
-	for i := range rs.Blocks {
-		if view, err := rs.Blocks[i].TemporaryTables.Get(fileIdentifier); err == nil {
-			return view, nil
-		}
-	}
-	return nil, NewUndeclaredTemporaryTableError(identifier)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (rs *ReferenceScope) GetTemporaryTableWithInternalId(ctx context.Context, identifier parser.Identifier, flags *option.Flags) (view *View, err error) {
-	fileIdentifier := strings.ToUpper(identifier.Literal)
-	for i := range rs.Blocks {
-		if view, err = rs.Blocks[i].TemporaryTables.GetWithInternalId(ctx, fileIdentifier, flags); err == nil {
-			return
-		} else if err != errTableNotLoaded {
-			return nil, err
-		}
-	}
-	return nil, NewUndeclaredTemporaryTableError(identifier)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (rs *ReferenceScope) SetTemporaryTable(view *View) {
-	rs.Blocks[0].TemporaryTables.Set(view)
-}
+func (rs *ReferenceScope) SetTemporaryTable(view *View) { _ = "STUB: not implemented"; return }
 
-func (rs *ReferenceScope) ReplaceTemporaryTable(view *View) {
-	for i := range rs.Blocks {
-		if rs.Blocks[i].TemporaryTables.Exists(view.FileInfo.IdentifiedPath()) {
-			rs.Blocks[i].TemporaryTables.Set(view)
-			return
-		}
-	}
-}
+func (rs *ReferenceScope) ReplaceTemporaryTable(view *View) { _ = "STUB: not implemented"; return }
 
 func (rs *ReferenceScope) DisposeTemporaryTable(name parser.QueryExpression) error {
-	for i := range rs.Blocks {
-		if rs.Blocks[i].TemporaryTables.DisposeTemporaryTable(name) {
-			return nil
-		}
-	}
-	return NewUndeclaredTemporaryTableError(name)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) StoreTemporaryTable(session *Session, uncomittedViews map[string]*FileInfo) []string {
-	msglist := make([]string, 0, len(uncomittedViews))
-	for i := range rs.Blocks {
-		rs.Blocks[i].TemporaryTables.Range(func(key, value interface{}) bool {
-			if _, ok := uncomittedViews[key.(string)]; ok {
-				view := value.(*View)
-
-				if view.FileInfo.IsStdin() {
-					session.updateStdinView(view.Copy())
-					msglist = append(msglist, fmt.Sprintf("Commit: restore point of view %q is created.", view.FileInfo.Path))
-				} else if view.FileInfo.IsTemporaryTable() {
-					view.CreateRestorePoint()
-					msglist = append(msglist, fmt.Sprintf("Commit: restore point of view %q is created.", view.FileInfo.Path))
-				}
-			}
-			return true
-		})
-	}
-	return msglist
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) RestoreTemporaryTable(uncomittedViews map[string]*FileInfo) []string {
-	msglist := make([]string, 0, len(uncomittedViews))
-	for i := range rs.Blocks {
-		rs.Blocks[i].TemporaryTables.Range(func(key, value interface{}) bool {
-			if _, ok := uncomittedViews[key.(string)]; ok {
-				view := value.(*View)
-
-				if view.FileInfo.IsStdin() {
-					rs.Blocks[i].TemporaryTables.Delete(view.FileInfo.IdentifiedPath())
-					msglist = append(msglist, fmt.Sprintf("Rollback: view %q is restored.", view.FileInfo.Path))
-				} else if view.FileInfo.IsTemporaryTable() {
-					view.Restore()
-					msglist = append(msglist, fmt.Sprintf("Rollback: view %q is restored.", view.FileInfo.Path))
-				}
-			}
-			return true
-		})
-	}
-	return msglist
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) AllTemporaryTables() ViewMap {
-	all := NewViewMap()
-
-	for i := range rs.Blocks {
-		rs.Blocks[i].TemporaryTables.Range(func(key, value interface{}) bool {
-			if value.(*View).FileInfo.IsInMemoryTable() {
-				k := key.(string)
-				if !all.Exists(k) {
-					all.Store(k, value.(*View))
-				}
-			}
-			return true
-		})
-	}
-	return all
+	_ = "STUB: not implemented"
+	return *new(ViewMap)
 }
 
 func (rs *ReferenceScope) DeclareCursor(expr parser.CursorDeclaration) error {
-	return rs.Blocks[0].Cursors.Declare(expr)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) AddPseudoCursor(name parser.Identifier, values []value.Primary) error {
-	return rs.Blocks[0].Cursors.AddPseudoCursor(name, values)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) DisposeCursor(name parser.Identifier) error {
-	for i := range rs.Blocks {
-		err := rs.Blocks[i].Cursors.Dispose(name)
-		if err == nil {
-			return nil
-		}
-		if err == errPseudoCursor {
-			return NewPseudoCursorError(name)
-		}
-	}
-	return NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) OpenCursor(ctx context.Context, name parser.Identifier, values []parser.ReplaceValue) error {
-	var err error
-	for i := range rs.Blocks {
-		err = rs.Blocks[i].Cursors.Open(ctx, rs, name, values)
-		if err == nil {
-			return nil
-		}
-		if err != errUndeclaredCursor {
-			return err
-		}
-	}
-	return NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) CloseCursor(name parser.Identifier) error {
-	for i := range rs.Blocks {
-		err := rs.Blocks[i].Cursors.Close(name)
-		if err == nil {
-			return nil
-		}
-		if err != errUndeclaredCursor {
-			return err
-		}
-	}
-	return NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) FetchCursor(name parser.Identifier, position int, number int) ([]value.Primary, error) {
-	var values []value.Primary
-	var err error
-
-	for i := range rs.Blocks {
-		values, err = rs.Blocks[i].Cursors.Fetch(name, position, number)
-		if err == nil {
-			return values, nil
-		}
-		if err != errUndeclaredCursor {
-			return nil, err
-		}
-	}
-	return nil, NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (rs *ReferenceScope) CursorIsOpen(name parser.Identifier) (ternary.Value, error) {
-	for i := range rs.Blocks {
-		if ok, err := rs.Blocks[i].Cursors.IsOpen(name); err == nil {
-			return ok, nil
-		}
-	}
-	return ternary.FALSE, NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return *new(ternary.Value), nil
 }
 
 func (rs *ReferenceScope) CursorIsInRange(name parser.Identifier) (ternary.Value, error) {
-	var result ternary.Value
-	var err error
-
-	for i := range rs.Blocks {
-		result, err = rs.Blocks[i].Cursors.IsInRange(name)
-		if err == nil {
-			return result, nil
-		}
-		if err != errUndeclaredCursor {
-			return result, err
-		}
-	}
-	return ternary.FALSE, NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return *new(ternary.Value), nil
 }
 
 func (rs *ReferenceScope) CursorCount(name parser.Identifier) (int, error) {
-	var count int
-	var err error
-
-	for i := range rs.Blocks {
-		count, err = rs.Blocks[i].Cursors.Count(name)
-		if err == nil {
-			return count, nil
-		}
-		if err != errUndeclaredCursor {
-			return 0, err
-		}
-	}
-	return 0, NewUndeclaredCursorError(name)
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
-func (rs *ReferenceScope) AllCursors() CursorMap {
-	all := NewCursorMap()
-	for i := range rs.Blocks {
-		rs.Blocks[i].Cursors.Range(func(key, val interface{}) bool {
-			cur := val.(*Cursor)
-			if !cur.isPseudo {
-				if !all.Exists(key.(string)) {
-					all.Store(key.(string), cur)
-				}
-			}
-			return true
-		})
-	}
-	return all
-}
+func (rs *ReferenceScope) AllCursors() CursorMap { _ = "STUB: not implemented"; return *new(CursorMap) }
 
 func (rs *ReferenceScope) DeclareFunction(expr parser.FunctionDeclaration) error {
-	return rs.Blocks[0].Functions.Declare(expr)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) DeclareAggregateFunction(expr parser.AggregateDeclaration) error {
-	return rs.Blocks[0].Functions.DeclareAggregate(expr)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) GetFunction(expr parser.QueryExpression, name string) (*UserDefinedFunction, error) {
-	for i := range rs.Blocks {
-		if fn, ok := rs.Blocks[i].Functions.Get(name); ok {
-			return fn, nil
-		}
-	}
-	return nil, NewFunctionNotExistError(expr, name)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (rs *ReferenceScope) DisposeFunction(name parser.Identifier) error {
-	for i := range rs.Blocks {
-		if rs.Blocks[i].Functions.Dispose(name) {
-			return nil
-		}
-	}
-	return NewFunctionNotExistError(name, name.Literal)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) AllFunctions() (UserDefinedFunctionMap, UserDefinedFunctionMap) {
-	scalarAll := NewUserDefinedFunctionMap()
-	aggregateAll := NewUserDefinedFunctionMap()
-
-	for i := range rs.Blocks {
-		rs.Blocks[i].Functions.Range(func(key, val interface{}) bool {
-			fn := val.(*UserDefinedFunction)
-			if fn.IsAggregate {
-				if !aggregateAll.Exists(key.(string)) {
-					aggregateAll.Store(key.(string), fn)
-				}
-			} else {
-				if !scalarAll.Exists(key.(string)) {
-					scalarAll.Store(key.(string), fn)
-				}
-			}
-			return true
-		})
-	}
-
-	return scalarAll, aggregateAll
+	_ = "STUB: not implemented"
+	return *new(UserDefinedFunctionMap), *new(UserDefinedFunctionMap)
 }
 
 func (rs *ReferenceScope) SetInlineTable(ctx context.Context, inlineTable parser.InlineTable) error {
-	return rs.nodes[0].inlineTables.Set(ctx, rs, inlineTable)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) GetInlineTable(name parser.Identifier) (*View, error) {
-	for i := range rs.nodes {
-		if view, err := rs.nodes[i].inlineTables.Get(name); err == nil {
-			return view, nil
-		}
-	}
-	return nil, NewUndefinedInLineTableError(name)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (rs *ReferenceScope) StoreInlineTable(name parser.Identifier, view *View) error {
-	return rs.nodes[0].inlineTables.Store(name, view)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) InlineTableExists(name parser.Identifier) bool {
-	for i := range rs.nodes {
-		if rs.nodes[i].inlineTables.Exists(name) {
-			return true
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 func (rs *ReferenceScope) LoadInlineTable(ctx context.Context, clause parser.WithClause) error {
-	for _, v := range clause.InlineTables {
-		inlineTable := v.(parser.InlineTable)
-		err := rs.SetInlineTable(ctx, inlineTable)
-		if err != nil {
-			return err
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (rs *ReferenceScope) AddAlias(alias parser.Identifier, path string) error {
-	return rs.nodes[0].aliases.Add(alias, path)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (rs *ReferenceScope) GetAlias(alias parser.Identifier) (path string, err error) {
-	for i := range rs.nodes {
-		if path, err = rs.nodes[i].aliases.Get(alias); err == nil {
-			return
-		}
-	}
-	err = NewTableNotLoadedError(alias)
-	return
+	_ = "STUB: not implemented"
+	return "", nil
 }

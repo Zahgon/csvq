@@ -1,168 +1,75 @@
 package file
 
-import (
-	"fmt"
-	"strings"
-
-	"github.com/mithrandie/go-file/v2"
-)
-
-func ParseError(err error) error {
-	switch err.(type) {
-	case *file.IOError:
-		return NewIOError(err.Error())
-	case *file.LockError:
-		return NewLockError(err.Error())
-	case *file.TimeoutError:
-		return &TimeoutError{
-			message: err.Error(),
-		}
-	case *file.ContextCanceled:
-		return NewContextCanceled()
-	case *file.ContextDone:
-		return NewContextDone(err.Error())
-	default:
-		return err
-	}
-}
+func ParseError(err error) error { _ = "STUB: not implemented"; return nil }
 
 type IOError struct {
 	message string
 }
 
-func NewIOError(message string) error {
-	return &IOError{
-		message: message,
-	}
-}
+func NewIOError(message string) error { _ = "STUB: not implemented"; return nil }
 
-func (e IOError) Error() string {
-	return e.message
-}
+func (e IOError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type NotExistError struct {
 	message string
 }
 
-func NewNotExistError(message string) error {
-	return &NotExistError{
-		message: message,
-	}
-}
+func NewNotExistError(message string) error { _ = "STUB: not implemented"; return nil }
 
-func (e NotExistError) Error() string {
-	return e.message
-}
+func (e NotExistError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type AlreadyExistError struct {
 	message string
 }
 
-func NewAlreadyExistError(message string) error {
-	return &AlreadyExistError{
-		message: message,
-	}
-}
+func NewAlreadyExistError(message string) error { _ = "STUB: not implemented"; return nil }
 
-func (e AlreadyExistError) Error() string {
-	return e.message
-}
+func (e AlreadyExistError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type LockError struct {
 	message string
 }
 
-func NewLockError(message string) error {
-	return &LockError{
-		message: message,
-	}
-}
+func NewLockError(message string) error { _ = "STUB: not implemented"; return nil }
 
-func (e LockError) Error() string {
-	return e.message
-}
+func (e LockError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type TimeoutError struct {
 	message string
 }
 
-func NewTimeoutError(path string) error {
-	return &TimeoutError{
-		message: fmt.Sprintf("file %s: lock waiting time exceeded", path),
-	}
-}
+func NewTimeoutError(path string) error { _ = "STUB: not implemented"; return nil }
 
-func (e TimeoutError) Error() string {
-	return e.message
-}
+func (e TimeoutError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type ContextCanceled struct {
 	message string
 }
 
-func NewContextCanceled() error {
-	return &ContextCanceled{
-		message: "execution canceled",
-	}
-}
+func NewContextCanceled() error { _ = "STUB: not implemented"; return nil }
 
-func (e ContextCanceled) Error() string {
-	return e.message
-}
+func (e ContextCanceled) Error() string { _ = "STUB: not implemented"; return "" }
 
 type ContextDone struct {
 	message string
 }
 
-func NewContextDone(message string) error {
-	return &ContextDone{
-		message: message,
-	}
-}
+func NewContextDone(message string) error { _ = "STUB: not implemented"; return nil }
 
-func (e ContextDone) Error() string {
-	return e.message
-}
+func (e ContextDone) Error() string { _ = "STUB: not implemented"; return "" }
 
 type ForcedUnlockError struct {
 	Errors []error
 }
 
-func NewForcedUnlockError(errs []error) error {
-	if errs == nil {
-		return nil
-	}
+func NewForcedUnlockError(errs []error) error { _ = "STUB: not implemented"; return nil }
 
-	return &ForcedUnlockError{
-		Errors: errs,
-	}
-}
-
-func (e ForcedUnlockError) Error() string {
-	list := make([]string, 0, len(e.Errors))
-	for _, err := range e.Errors {
-		list = append(list, err.Error())
-	}
-	return strings.Join(list, "\n  ")
-}
+func (e ForcedUnlockError) Error() string { _ = "STUB: not implemented"; return "" }
 
 type CompositeError struct {
 	message string
 }
 
-func NewCompositeError(err1 error, err2 error) error {
-	if err1 == nil {
-		return err2
-	}
-	if err2 == nil {
-		return err1
-	}
+func NewCompositeError(err1 error, err2 error) error { _ = "STUB: not implemented"; return nil }
 
-	return &CompositeError{
-		message: err1.Error() + "\n  " + err2.Error(),
-	}
-}
-
-func (e CompositeError) Error() string {
-	return e.message
-}
+func (e CompositeError) Error() string { _ = "STUB: not implemented"; return "" }

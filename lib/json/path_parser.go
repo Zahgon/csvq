@@ -3,8 +3,6 @@
 //line lib/json/path_parser.y:2
 package json
 
-import __yyfmt__ "fmt"
-
 //line lib/json/path_parser.y:2
 
 //line lib/json/path_parser.y:5
@@ -34,10 +32,8 @@ const jpInitialStackSize = 16
 //line lib/json/path_parser.y:40
 
 func ParsePath(src string) (PathExpression, error) {
-	l := new(PathLexer)
-	l.Init(src)
-	jpParse(l)
-	return l.path, l.err
+	_ = "STUB: not implemented"
+	return *new(PathExpression), nil
 }
 
 //line yacctab:1
@@ -126,338 +122,88 @@ type jpParserImpl struct {
 	char  int
 }
 
-func (p *jpParserImpl) Lookahead() int {
-	return p.char
-}
+func (p *jpParserImpl) Lookahead() int { _ = "STUB: not implemented"; return 0 }
 
-func jpNewParser() jpParser {
-	return &jpParserImpl{}
-}
+func jpNewParser() jpParser { _ = "STUB: not implemented"; return *new(jpParser) }
 
 const jpFlag = -1000
 
-func jpTokname(c int) string {
-	if c >= 1 && c-1 < len(jpToknames) {
-		if jpToknames[c-1] != "" {
-			return jpToknames[c-1]
-		}
-	}
-	return __yyfmt__.Sprintf("tok-%v", c)
-}
+func jpTokname(c int) string { _ = "STUB: not implemented"; return "" }
 
-func jpStatname(s int) string {
-	if s >= 0 && s < len(jpStatenames) {
-		if jpStatenames[s] != "" {
-			return jpStatenames[s]
-		}
-	}
-	return __yyfmt__.Sprintf("state-%v", s)
-}
+func jpStatname(s int) string { _ = "STUB: not implemented"; return "" }
 
-func jpErrorMessage(state, lookAhead int) string {
-	const TOKSTART = 4
+func jpErrorMessage(state, lookAhead int) string { _ = "STUB: not implemented"; return "" }
 
-	if !jpErrorVerbose {
-		return "syntax error"
-	}
+// To match Bison, suggest at most four expected tokens.
 
-	for _, e := range jpErrorMessages {
-		if e.state == state && e.token == lookAhead {
-			return "syntax error: " + e.msg
-		}
-	}
+// Look for shiftable tokens.
 
-	res := "syntax error: unexpected " + jpTokname(lookAhead)
+// Look for tokens that we accept or reduce.
 
-	// To match Bison, suggest at most four expected tokens.
-	expected := make([]int, 0, 4)
+// If the default action is to accept or reduce, give up.
 
-	// Look for shiftable tokens.
-	base := jpPact[state]
-	for tok := TOKSTART; tok-1 < len(jpToknames); tok++ {
-		if n := base + tok; n >= 0 && n < jpLast && jpChk[jpAct[n]] == tok {
-			if len(expected) == cap(expected) {
-				return res
-			}
-			expected = append(expected, tok)
-		}
-	}
+func jplex1(lex jpLexer, lval *jpSymType) (char, token int) { _ = "STUB: not implemented"; return 0, 0 }
 
-	if jpDef[state] == -2 {
-		i := 0
-		for jpExca[i] != -1 || jpExca[i+1] != state {
-			i += 2
-		}
+/* unknown char */
 
-		// Look for tokens that we accept or reduce.
-		for i += 2; jpExca[i] >= 0; i += 2 {
-			tok := jpExca[i]
-			if tok < TOKSTART || jpExca[i+1] == 0 {
-				continue
-			}
-			if len(expected) == cap(expected) {
-				return res
-			}
-			expected = append(expected, tok)
-		}
+func jpParse(jplex jpLexer) int { _ = "STUB: not implemented"; return 0 }
 
-		// If the default action is to accept or reduce, give up.
-		if jpExca[i+1] != 0 {
-			return res
-		}
-	}
+func (jprcvr *jpParserImpl) Parse(jplex jpLexer) int { _ = "STUB: not implemented"; return 0 }
 
-	for i, tok := range expected {
-		if i == 0 {
-			res += ", expecting "
-		} else {
-			res += " or "
-		}
-		res += jpTokname(tok)
-	}
-	return res
-}
+// silence set and not used
 
-func jplex1(lex jpLexer, lval *jpSymType) (char, token int) {
-	token = 0
-	char = lex.Lex(lval)
-	if char <= 0 {
-		token = jpTok1[0]
-		goto out
-	}
-	if char < len(jpTok1) {
-		token = jpTok1[char]
-		goto out
-	}
-	if char >= jpPrivate {
-		if char < jpPrivate+len(jpTok2) {
-			token = jpTok2[char-jpPrivate]
-			goto out
-		}
-	}
-	for i := 0; i < len(jpTok3); i += 2 {
-		token = jpTok3[i+0]
-		if token == char {
-			token = jpTok3[i+1]
-			goto out
-		}
-	}
+/* number of errors */
+/* error recovery flag */
 
-out:
-	if token == 0 {
-		token = jpTok2[1] /* unknown char */
-	}
-	if jpDebug >= 3 {
-		__yyfmt__.Printf("lex %s(%d)\n", jpTokname(token), uint(char))
-	}
-	return char, token
-}
+// jprcvr.char translated into internal numbering
 
-func jpParse(jplex jpLexer) int {
-	return jpNewParser().Parse(jplex)
-}
+// Make sure we report no lookahead when not parsing.
 
-func (jprcvr *jpParserImpl) Parse(jplex jpLexer) int {
-	var jpn int
-	var jpVAL jpSymType
-	var jpDollar []jpSymType
-	_ = jpDollar // silence set and not used
-	jpS := jprcvr.stack[:]
+/* put a state and value onto the stack */
 
-	Nerrs := 0   /* number of errors */
-	Errflag := 0 /* error recovery flag */
-	jpstate := 0
-	jprcvr.char = -1
-	jptoken := -1 // jprcvr.char translated into internal numbering
-	defer func() {
-		// Make sure we report no lookahead when not parsing.
-		jpstate = -1
-		jprcvr.char = -1
-		jptoken = -1
-	}()
-	jpp := -1
-	goto jpstack
+/* simple state */
 
-ret0:
-	return 0
+/* valid shift */
 
-ret1:
-	return 1
+/* default state action */
 
-jpstack:
-	/* put a state and value onto the stack */
-	if jpDebug >= 4 {
-		__yyfmt__.Printf("char %v in %v\n", jpTokname(jptoken), jpStatname(jpstate))
-	}
+/* look through exception table */
 
-	jpp++
-	if jpp >= len(jpS) {
-		nyys := make([]jpSymType, len(jpS)*2)
-		copy(nyys, jpS)
-		jpS = nyys
-	}
-	jpS[jpp] = jpVAL
-	jpS[jpp].yys = jpstate
+/* error ... attempt to resume parsing */
 
-jpnewstate:
-	jpn = jpPact[jpstate]
-	if jpn <= jpFlag {
-		goto jpdefault /* simple state */
-	}
-	if jprcvr.char < 0 {
-		jprcvr.char, jptoken = jplex1(jplex, &jprcvr.lval)
-	}
-	jpn += jptoken
-	if jpn < 0 || jpn >= jpLast {
-		goto jpdefault
-	}
-	jpn = jpAct[jpn]
-	if jpChk[jpn] == jptoken { /* valid shift */
-		jprcvr.char = -1
-		jptoken = -1
-		jpVAL = jprcvr.lval
-		jpstate = jpn
-		if Errflag > 0 {
-			Errflag--
-		}
-		goto jpstack
-	}
+/* brand new error */
 
-jpdefault:
-	/* default state action */
-	jpn = jpDef[jpstate]
-	if jpn == -2 {
-		if jprcvr.char < 0 {
-			jprcvr.char, jptoken = jplex1(jplex, &jprcvr.lval)
-		}
+/* incompletely recovered error ... try again */
 
-		/* look through exception table */
-		xi := 0
-		for {
-			if jpExca[xi+0] == -1 && jpExca[xi+1] == jpstate {
-				break
-			}
-			xi += 2
-		}
-		for xi += 2; ; xi += 2 {
-			jpn = jpExca[xi+0]
-			if jpn < 0 || jpn == jptoken {
-				break
-			}
-		}
-		jpn = jpExca[xi+1]
-		if jpn < 0 {
-			goto ret0
-		}
-	}
-	if jpn == 0 {
-		/* error ... attempt to resume parsing */
-		switch Errflag {
-		case 0: /* brand new error */
-			jplex.Error(jpErrorMessage(jpstate, jptoken))
-			Nerrs++
-			if jpDebug >= 1 {
-				__yyfmt__.Printf("%s", jpStatname(jpstate))
-				__yyfmt__.Printf(" saw %s\n", jpTokname(jptoken))
-			}
-			fallthrough
+/* find a state where "error" is a legal shift action */
 
-		case 1, 2: /* incompletely recovered error ... try again */
-			Errflag = 3
+/* simulate a shift of "error" */
 
-			/* find a state where "error" is a legal shift action */
-			for jpp >= 0 {
-				jpn = jpPact[jpS[jpp].yys] + jpErrCode
-				if jpn >= 0 && jpn < jpLast {
-					jpstate = jpAct[jpn] /* simulate a shift of "error" */
-					if jpChk[jpstate] == jpErrCode {
-						goto jpstack
-					}
-				}
+/* the current p has no shift on "error", pop stack */
 
-				/* the current p has no shift on "error", pop stack */
-				if jpDebug >= 2 {
-					__yyfmt__.Printf("error recovery pops state %d\n", jpS[jpp].yys)
-				}
-				jpp--
-			}
-			/* there is no state on the stack with an error shift ... abort */
-			goto ret1
+/* there is no state on the stack with an error shift ... abort */
 
-		case 3: /* no shift yet; clobber input char */
-			if jpDebug >= 2 {
-				__yyfmt__.Printf("error recovery discards %s\n", jpTokname(jptoken))
-			}
-			if jptoken == jpEofCode {
-				goto ret1
-			}
-			jprcvr.char = -1
-			jptoken = -1
-			goto jpnewstate /* try again in the same state */
-		}
-	}
+/* no shift yet; clobber input char */
 
-	/* reduction by production jpn */
-	if jpDebug >= 2 {
-		__yyfmt__.Printf("reduce %v in:\n\t%v\n", jpn, jpStatname(jpstate))
-	}
+/* try again in the same state */
 
-	jpnt := jpn
-	jppt := jpp
-	_ = jppt // guard against "declared and not used"
+/* reduction by production jpn */
 
-	jpp -= jpR2[jpn]
-	// jpp is now the index of $0. Perform the default action. Iff the
-	// reduced production is ε, $1 is possibly out of range.
-	if jpp+1 >= len(jpS) {
-		nyys := make([]jpSymType, len(jpS)*2)
-		copy(nyys, jpS)
-		jpS = nyys
-	}
-	jpVAL = jpS[jpp+1]
+// guard against "declared and not used"
 
-	/* consult goto table to find next state */
-	jpn = jpR1[jpn]
-	jpg := jpPgo[jpn]
-	jpj := jpg + jpS[jpp].yys + 1
+// jpp is now the index of $0. Perform the default action. Iff the
+// reduced production is ε, $1 is possibly out of range.
 
-	if jpj >= jpLast {
-		jpstate = jpAct[jpg]
-	} else {
-		jpstate = jpAct[jpj]
-		if jpChk[jpstate] != -jpn {
-			jpstate = jpAct[jpg]
-		}
-	}
-	// dummy call; replaced with literal code
-	switch jpnt {
+/* consult goto table to find next state */
 
-	case 1:
-		jpDollar = jpS[jppt-0 : jppt+1]
+// dummy call; replaced with literal code
+
 //line lib/json/path_parser.y:20
-		{
-			jpVAL.expression = ObjectPath{}
-			jplex.(*PathLexer).path = jpVAL.expression
-		}
-	case 2:
-		jpDollar = jpS[jppt-1 : jppt+1]
+
 //line lib/json/path_parser.y:25
-		{
-			jpVAL.expression = jpDollar[1].member
-			jplex.(*PathLexer).path = jpVAL.expression
-		}
-	case 3:
-		jpDollar = jpS[jppt-1 : jppt+1]
+
 //line lib/json/path_parser.y:32
-		{
-			jpVAL.member = ObjectPath{Name: jpDollar[1].token.Literal}
-		}
-	case 4:
-		jpDollar = jpS[jppt-3 : jppt+1]
+
 //line lib/json/path_parser.y:36
-		{
-			jpVAL.member = ObjectPath{Name: jpDollar[1].token.Literal, Child: jpDollar[3].member}
-		}
-	}
-	goto jpstack /* stack new state and value */
-}
+
+/* stack new state and value */

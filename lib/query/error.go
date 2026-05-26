@@ -1,17 +1,9 @@
 package query
 
 import (
-	"context"
-	"fmt"
 	"os"
-	"reflect"
-	"runtime"
-	"strconv"
-	"strings"
 
-	"github.com/mithrandie/csvq/lib/file"
 	"github.com/mithrandie/csvq/lib/parser"
-	"github.com/mithrandie/csvq/lib/value"
 )
 
 const ExitMessage = "exit"
@@ -160,262 +152,109 @@ type BaseError struct {
 	compositeErrs []Error
 }
 
-func (e *BaseError) Error() string {
-	msg := e.err()
-	if e.compositeErrs != nil {
-		msglist := make([]string, 0, len(e.compositeErrs)+1)
-		msglist = append(msglist, "composite error:")
-		msglist = append(msglist, msg)
-		for _, ce := range e.compositeErrs {
-			msglist = append(msglist, ce.Error())
-		}
-		msg = strings.Join(msglist, "\n  ")
-	}
-	return msg
-}
+func (e *BaseError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *BaseError) err() string {
-	if 0 < len(e.prefix) {
-		return fmt.Sprintf(ErrorMessageWithCustomPrefixTemplate, e.prefix, e.message)
-	}
-	if e.line < 1 {
-		return e.message
-	}
-	if 0 < len(e.source) {
-		return fmt.Sprintf(ErrorMessageWithFilepathTemplate, e.source, e.line, e.char, e.message)
-	}
-	return fmt.Sprintf(ErrorMessageTemplate, e.line, e.char, e.message)
-}
+func (e *BaseError) err() string { _ = "STUB: not implemented"; return "" }
 
-func (e *BaseError) Message() string {
-	return e.message
-}
+func (e *BaseError) Message() string { _ = "STUB: not implemented"; return "" }
 
-func (e *BaseError) Code() int {
-	return e.code
-}
+func (e *BaseError) Code() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseError) Number() int {
-	return e.number
-}
+func (e *BaseError) Number() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseError) Line() int {
-	return e.line
-}
+func (e *BaseError) Line() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseError) Char() int {
-	return e.char
-}
+func (e *BaseError) Char() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseError) Source() string {
-	return e.source
-}
+func (e *BaseError) Source() string { _ = "STUB: not implemented"; return "" }
 
-func (e *BaseError) appendCompositeError(err Error) {
-	e.compositeErrs = append(e.compositeErrs, err)
-}
+func (e *BaseError) appendCompositeError(err Error) { _ = "STUB: not implemented"; return }
 
-func appendCompositeError(e1 error, e2 error) error {
-	if e1 == nil {
-		return e2
-	}
-	if e2 == nil {
-		return e1
-	}
-	appe1, ok := e1.(Error)
-	if !ok {
-		appe1 = NewSystemError(e1.Error()).(Error)
-	}
-	appe2, ok := e2.(Error)
-	if !ok {
-		appe2 = NewSystemError(e2.Error()).(Error)
-	}
-	appe1.appendCompositeError(appe2)
-	return appe1
-}
+func appendCompositeError(e1 error, e2 error) error { _ = "STUB: not implemented"; return nil }
 
 func NewBaseError(expr parser.Expression, message string, code int, number int) *BaseError {
-	var sourceFile string
-	var line int
-	var char int
-	if expr != nil && expr.HasParseInfo() {
-		sourceFile = expr.SourceFile()
-		line = expr.Line()
-		char = expr.Char()
-	}
-
-	return &BaseError{
-		source:  sourceFile,
-		line:    line,
-		char:    char,
-		message: message,
-		code:    code,
-		number:  number,
-		prefix:  "",
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func NewBaseErrorWithPrefix(prefix string, message string, code int, number int) *BaseError {
-	return &BaseError{
-		source:  "",
-		line:    0,
-		char:    0,
-		message: message,
-		code:    code,
-		number:  number,
-		prefix:  prefix,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FatalError struct {
 	*BaseError
 }
 
-func NewFatalError(panicReport interface{}) error {
-	stacks := make([]string, 0, 30)
-	for depth := 0; ; depth++ {
-		pc, src, line, ok := runtime.Caller(depth)
-		if !ok {
-			break
-		}
-		if depth == 0 {
-			continue
-		}
-		stacks = append(stacks, fmt.Sprintf("  %d: %s [%s:%d]", depth-1, runtime.FuncForPC(pc).Name(), src, line))
-	}
-
-	message := fmt.Sprintf("%v\n", panicReport) +
-		"An unexpected error has occurred. Please report this problem to: https://github.com/mithrandie/csvq/issues\n" +
-		"\n" +
-		"Stack:\n" +
-		strings.Join(stacks, "\n")
-
-	return &FatalError{
-		NewBaseErrorWithPrefix("Fatal Error", message, ReturnCodeApplicationError, ErrorFatal),
-	}
-}
+func NewFatalError(panicReport interface{}) error { _ = "STUB: not implemented"; return nil }
 
 type SystemError struct {
 	*BaseError
 }
 
-func NewSystemError(message string) error {
-	return &SystemError{
-		NewBaseErrorWithPrefix("System Error", message, ReturnCodeSystemError, ErrorSystemError),
-	}
-}
+func NewSystemError(message string) error { _ = "STUB: not implemented"; return nil }
 
 type ForcedExit struct {
 	*BaseError
 }
 
-func NewForcedExit(code int) error {
-	return &ForcedExit{&BaseError{message: ExitMessage, code: code, number: ErrorExit}}
-}
+func NewForcedExit(code int) error { _ = "STUB: not implemented"; return nil }
 
 type UserTriggeredError struct {
 	*BaseError
 }
 
 func NewUserTriggeredError(expr parser.Trigger, message string) error {
-	code := ReturnCodeDefaultUserTriggeredError
-	if expr.Code != nil {
-		code = int(expr.Code.(*value.Integer).Raw())
-	}
-
-	if len(message) < 1 {
-		message = DefaultUserTriggeredErrorMessage
-	}
-
-	return &UserTriggeredError{
-		NewBaseError(expr, message, code, ErrorUserTriggered),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SignalReceived struct {
 	*BaseError
 }
 
-func NewSignalReceived(sig os.Signal) error {
-	v := reflect.ValueOf(sig)
-	code := int(v.Int())
-	return &SignalReceived{
-		NewBaseErrorWithPrefix("", fmt.Sprintf(ErrMsgSignalReceived, sig.String()), returnCodeBaseSignal+code, errorSignalBase+code),
-	}
-}
+func NewSignalReceived(sig os.Signal) error { _ = "STUB: not implemented"; return nil }
 
 type SyntaxError struct {
 	*BaseError
 }
 
-func NewSyntaxError(err *parser.SyntaxError) error {
-	return &SyntaxError{
-		&BaseError{
-			source:  err.SourceFile,
-			line:    err.Line,
-			char:    err.Char,
-			message: err.Message,
-			code:    ReturnCodeSyntaxError,
-			number:  ErrorSyntaxError,
-		},
-	}
-}
+func NewSyntaxError(err *parser.SyntaxError) error { _ = "STUB: not implemented"; return nil }
 
 type PreparedStatementSyntaxError struct {
 	*BaseError
 }
 
 func NewPreparedStatementSyntaxError(err *parser.SyntaxError) error {
-	return &PreparedStatementSyntaxError{
-		&BaseError{
-			source:  fmt.Sprintf("prepare %s", err.SourceFile),
-			line:    err.Line,
-			char:    err.Char,
-			message: err.Message,
-			code:    ReturnCodeSyntaxError,
-			number:  ErrorPreparedStatementSyntaxError,
-		},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type ContextCanceled struct {
 	*BaseError
 }
 
-func NewContextCanceled(message string) error {
-	return &ContextDone{
-		NewBaseErrorWithPrefix("Context", message, ReturnCodeContextDone, ErrorContextCanceled),
-	}
-}
+func NewContextCanceled(message string) error { _ = "STUB: not implemented"; return nil }
 
 type ContextDone struct {
 	*BaseError
 }
 
-func NewContextDone(message string) error {
-	return &ContextDone{
-		NewBaseErrorWithPrefix("Context", message, ReturnCodeContextDone, ErrorContextDone),
-	}
-}
+func NewContextDone(message string) error { _ = "STUB: not implemented"; return nil }
 
 type IncorrectCommandUsageError struct {
 	*BaseError
 }
 
-func NewIncorrectCommandUsageError(message string) error {
-	return &IncorrectCommandUsageError{
-		NewBaseErrorWithPrefix("", fmt.Sprintf(ErrMsgIncorrectCommandUsage, message), ReturnCodeIncorrectUsage, ErrorIncorrectCommandUsage),
-	}
-}
+func NewIncorrectCommandUsageError(message string) error { _ = "STUB: not implemented"; return nil }
 
 type InvalidValueExpressionError struct {
 	*BaseError
 }
 
 func NewInvalidValueExpressionError(expr parser.QueryExpression) error {
-	return &InvalidValueExpressionError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidValueExpression, expr), ReturnCodeSyntaxError, ErrorInvalidValueExpression),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidPathError struct {
@@ -423,9 +262,8 @@ type InvalidPathError struct {
 }
 
 func NewInvalidPathError(expr parser.Expression, path string, message string) error {
-	return &InvalidPathError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidPath, path, message), ReturnCodeIOError, ErrorInvalidPath),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type IOError struct {
@@ -433,9 +271,8 @@ type IOError struct {
 }
 
 func NewIOError(expr parser.QueryExpression, message string) error {
-	return &IOError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgIO, message), ReturnCodeIOError, ErrorIO),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type CommitError struct {
@@ -443,14 +280,8 @@ type CommitError struct {
 }
 
 func NewCommitError(expr parser.Expression, message string) error {
-	if expr == nil {
-		return &CommitError{
-			NewBaseErrorWithPrefix("Auto Commit", fmt.Sprintf(ErrMsgCommit, message), ReturnCodeIOError, ErrorCommit),
-		}
-	}
-	return &CommitError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgCommit, message), ReturnCodeIOError, ErrorCommit),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type RollbackError struct {
@@ -458,14 +289,8 @@ type RollbackError struct {
 }
 
 func NewRollbackError(expr parser.Expression, message string) error {
-	if expr == nil {
-		return &RollbackError{
-			NewBaseErrorWithPrefix("Auto Rollback", fmt.Sprintf(ErrMsgRollback, message), ReturnCodeIOError, ErrorRollback),
-		}
-	}
-	return &RollbackError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgRollback, message), ReturnCodeIOError, ErrorRollback),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type CannotDetectFileEncodingError struct {
@@ -473,9 +298,8 @@ type CannotDetectFileEncodingError struct {
 }
 
 func NewCannotDetectFileEncodingError(file parser.QueryExpression) error {
-	return &CannotDetectFileEncodingError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgCannotDetectFileEncoding, file), ReturnCodeApplicationError, ErrorCannotDetectFileEncoding),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FieldAmbiguousError struct {
@@ -483,9 +307,8 @@ type FieldAmbiguousError struct {
 }
 
 func NewFieldAmbiguousError(field parser.QueryExpression) error {
-	return &FieldAmbiguousError{
-		NewBaseError(field, fmt.Sprintf(ErrMsgFieldAmbiguous, field), ReturnCodeApplicationError, ErrorFieldAmbiguous),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FieldNotExistError struct {
@@ -493,9 +316,8 @@ type FieldNotExistError struct {
 }
 
 func NewFieldNotExistError(field parser.QueryExpression) error {
-	return &FieldNotExistError{
-		NewBaseError(field, fmt.Sprintf(ErrMsgFieldNotExist, field), ReturnCodeApplicationError, ErrorFieldNotExist),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FieldNotGroupKeyError struct {
@@ -503,9 +325,8 @@ type FieldNotGroupKeyError struct {
 }
 
 func NewFieldNotGroupKeyError(field parser.QueryExpression) error {
-	return &FieldNotGroupKeyError{
-		NewBaseError(field, fmt.Sprintf(ErrMsgFieldNotGroupKey, field), ReturnCodeApplicationError, ErrorFieldNotGroupKey),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DuplicateFieldNameError struct {
@@ -513,9 +334,8 @@ type DuplicateFieldNameError struct {
 }
 
 func NewDuplicateFieldNameError(fieldName parser.Identifier) error {
-	return &DuplicateFieldNameError{
-		NewBaseError(fieldName, fmt.Sprintf(ErrMsgDuplicateFieldName, fieldName), ReturnCodeApplicationError, ErrorDuplicateFieldName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type NotGroupingRecordsError struct {
@@ -523,9 +343,8 @@ type NotGroupingRecordsError struct {
 }
 
 func NewNotGroupingRecordsError(expr parser.QueryExpression, funcname string) error {
-	return &NotGroupingRecordsError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgNotGroupingRecords, funcname), ReturnCodeApplicationError, ErrorNotGroupingRecords),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type NotAllowedAnalyticFunctionError struct {
@@ -533,59 +352,41 @@ type NotAllowedAnalyticFunctionError struct {
 }
 
 func NewNotAllowedAnalyticFunctionError(expr parser.AnalyticFunction) error {
-	return &NotAllowedAnalyticFunctionError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgNotAllowedAnalyticFunction, expr.Name), ReturnCodeApplicationError, ErrorNotAllowedAnalyticFunction),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UndeclaredVariableError struct {
 	*BaseError
 }
 
-func NewUndeclaredVariableError(expr parser.Variable) error {
-	return &UndeclaredVariableError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgUndeclaredVariable, expr), ReturnCodeApplicationError, ErrorUndeclaredVariable),
-	}
-}
+func NewUndeclaredVariableError(expr parser.Variable) error { _ = "STUB: not implemented"; return nil }
 
 type VariableRedeclaredError struct {
 	*BaseError
 }
 
-func NewVariableRedeclaredError(expr parser.Variable) error {
-	return &VariableRedeclaredError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgVariableRedeclared, expr), ReturnCodeApplicationError, ErrorVariableRedeclared),
-	}
-}
+func NewVariableRedeclaredError(expr parser.Variable) error { _ = "STUB: not implemented"; return nil }
 
 type UndefinedConstantError struct {
 	*BaseError
 }
 
-func NewUndefinedConstantError(expr parser.Constant) error {
-	return &UndefinedConstantError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgUndefinedConstant, expr), ReturnCodeApplicationError, ErrorUndefinedConstant),
-	}
-}
+func NewUndefinedConstantError(expr parser.Constant) error { _ = "STUB: not implemented"; return nil }
 
 type InvalidUrlError struct {
 	*BaseError
 }
 
-func NewInvalidUrlError(expr parser.Url) error {
-	return &InvalidUrlError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidUrl, expr), ReturnCodeApplicationError, ErrorInvalidUrl),
-	}
-}
+func NewInvalidUrlError(expr parser.Url) error { _ = "STUB: not implemented"; return nil }
 
 type UnsupportedUrlSchemeError struct {
 	*BaseError
 }
 
 func NewUnsupportedUrlSchemeError(expr parser.Url, scheme string) error {
-	return &UnsupportedUrlSchemeError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgUnsupportedUrlScheme, scheme), ReturnCodeApplicationError, ErrorUnsupportedUrlScheme),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FunctionNotExistError struct {
@@ -593,9 +394,8 @@ type FunctionNotExistError struct {
 }
 
 func NewFunctionNotExistError(expr parser.QueryExpression, funcname string) error {
-	return &FunctionNotExistError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgFunctionNotExist, funcname), ReturnCodeApplicationError, ErrorFunctionNotExist),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FunctionArgumentLengthError struct {
@@ -603,31 +403,13 @@ type FunctionArgumentLengthError struct {
 }
 
 func NewFunctionArgumentLengthError(expr parser.QueryExpression, funcname string, argslen []int) error {
-	var argstr string
-	if 1 < len(argslen) {
-		first := argslen[0]
-		last := argslen[len(argslen)-1]
-		lastarg := FormatCount(last, "argument")
-		if len(argslen) == 2 {
-			argstr = strconv.Itoa(first) + " or " + lastarg
-		} else {
-			argstr = strconv.Itoa(first) + " to " + lastarg
-		}
-	} else {
-		argstr = FormatCount(argslen[0], "argument")
-		if 0 < argslen[0] {
-			argstr = "exactly " + argstr
-		}
-	}
-	return &FunctionArgumentLengthError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgFunctionArgumentsLength, funcname, argstr), ReturnCodeApplicationError, ErrorFunctionArgumentsLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func NewFunctionArgumentLengthErrorWithCustomArgs(expr parser.QueryExpression, funcname string, argstr string) error {
-	return &FunctionArgumentLengthError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgFunctionArgumentsLength, funcname, argstr), ReturnCodeApplicationError, ErrorFunctionArgumentsLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FunctionInvalidArgumentError struct {
@@ -635,9 +417,8 @@ type FunctionInvalidArgumentError struct {
 }
 
 func NewFunctionInvalidArgumentError(function parser.QueryExpression, funcname string, message string) error {
-	return &FunctionInvalidArgumentError{
-		NewBaseError(function, fmt.Sprintf(ErrMsgFunctionInvalidArgument, message, funcname), ReturnCodeApplicationError, ErrorFunctionInvalidArgument),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type NestedAggregateFunctionsError struct {
@@ -645,9 +426,8 @@ type NestedAggregateFunctionsError struct {
 }
 
 func NewNestedAggregateFunctionsError(expr parser.QueryExpression) error {
-	return &NestedAggregateFunctionsError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgNestedAggregateFunctions, expr), ReturnCodeSyntaxError, ErrorNestedAggregateFunctions),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FunctionRedeclaredError struct {
@@ -655,9 +435,8 @@ type FunctionRedeclaredError struct {
 }
 
 func NewFunctionRedeclaredError(expr parser.Identifier) error {
-	return &FunctionRedeclaredError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgFunctionRedeclared, expr.Literal), ReturnCodeApplicationError, ErrorFunctionRedeclared),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type BuiltInFunctionDeclaredError struct {
@@ -665,29 +444,23 @@ type BuiltInFunctionDeclaredError struct {
 }
 
 func NewBuiltInFunctionDeclaredError(expr parser.Identifier) error {
-	return &BuiltInFunctionDeclaredError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgBuiltInFunctionDeclared, expr.Literal), ReturnCodeApplicationError, ErrorBuiltInFunctionDeclared),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DuplicateParameterError struct {
 	*BaseError
 }
 
-func NewDuplicateParameterError(expr parser.Variable) error {
-	return &DuplicateParameterError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgDuplicateParameter, expr.String()), ReturnCodeApplicationError, ErrorDuplicateParameter),
-	}
-}
+func NewDuplicateParameterError(expr parser.Variable) error { _ = "STUB: not implemented"; return nil }
 
 type SubqueryTooManyRecordsError struct {
 	*BaseError
 }
 
 func NewSubqueryTooManyRecordsError(expr parser.Subquery) error {
-	return &SubqueryTooManyRecordsError{
-		NewBaseError(expr, ErrMsgSubqueryTooManyRecords, ReturnCodeApplicationError, ErrorSubqueryTooManyRecords),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SubqueryTooManyFieldsError struct {
@@ -695,9 +468,8 @@ type SubqueryTooManyFieldsError struct {
 }
 
 func NewSubqueryTooManyFieldsError(expr parser.Subquery) error {
-	return &SubqueryTooManyFieldsError{
-		NewBaseError(expr, ErrMsgSubqueryTooManyFields, ReturnCodeApplicationError, ErrorSubqueryTooManyFields),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type JsonQueryTooManyRecordsError struct {
@@ -705,9 +477,8 @@ type JsonQueryTooManyRecordsError struct {
 }
 
 func NewJsonQueryTooManyRecordsError(expr parser.JsonQuery) error {
-	return &JsonQueryTooManyRecordsError{
-		NewBaseError(expr, ErrMsgJsonQueryTooManyRecords, ReturnCodeApplicationError, ErrorJsonQueryTooManyRecords),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type LoadJsonError struct {
@@ -715,9 +486,8 @@ type LoadJsonError struct {
 }
 
 func NewLoadJsonError(expr parser.QueryExpression, message string) error {
-	return &LoadJsonError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgLoadJson, message), ReturnCodeApplicationError, ErrorLoadJson),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type JsonLinesStructureError struct {
@@ -725,29 +495,23 @@ type JsonLinesStructureError struct {
 }
 
 func NewJsonLinesStructureError(expr parser.QueryExpression) error {
-	return &JsonLinesStructureError{
-		NewBaseError(expr, ErrMsgJsonLinesStructure, ReturnCodeApplicationError, ErrorJsonLinesStructure),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type IncorrectLateralUsageError struct {
 	*BaseError
 }
 
-func NewIncorrectLateralUsageError(expr parser.Table) error {
-	return &IncorrectLateralUsageError{
-		NewBaseError(expr, ErrMsgIncorrectLateralUsage, ReturnCodeApplicationError, ErrorIncorrectLateralUsage),
-	}
-}
+func NewIncorrectLateralUsageError(expr parser.Table) error { _ = "STUB: not implemented"; return nil }
 
 type EmptyInlineTableError struct {
 	*BaseError
 }
 
 func NewEmptyInlineTableError(expr parser.FormatSpecifiedFunction) error {
-	return &EmptyInlineTableError{
-		NewBaseError(expr, ErrMsgEmptyInlineTable, ReturnCodeApplicationError, ErrorEmptyInlineTable),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidTableObjectError struct {
@@ -755,9 +519,8 @@ type InvalidTableObjectError struct {
 }
 
 func NewInvalidTableObjectError(expr parser.FormatSpecifiedFunction, objectName string) error {
-	return &InvalidTableObjectError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidTableObject, objectName), ReturnCodeApplicationError, ErrorInvalidTableObject),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectInvalidDelimiterError struct {
@@ -765,9 +528,8 @@ type TableObjectInvalidDelimiterError struct {
 }
 
 func NewTableObjectInvalidDelimiterError(expr parser.FormatSpecifiedFunction, delimiter string) error {
-	return &InvalidTableObjectError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectInvalidDelimiter, delimiter), ReturnCodeApplicationError, ErrorTableObjectInvalidDelimiter),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectInvalidDelimiterPositionsError struct {
@@ -775,9 +537,8 @@ type TableObjectInvalidDelimiterPositionsError struct {
 }
 
 func NewTableObjectInvalidDelimiterPositionsError(expr parser.FormatSpecifiedFunction, positions string) error {
-	return &InvalidTableObjectError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectInvalidDelimiterPositions, positions), ReturnCodeApplicationError, ErrorTableObjectInvalidDelimiterPositions),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectInvalidJsonQueryError struct {
@@ -785,9 +546,8 @@ type TableObjectInvalidJsonQueryError struct {
 }
 
 func NewTableObjectInvalidJsonQueryError(expr parser.FormatSpecifiedFunction, jsonQuery string) error {
-	return &InvalidTableObjectError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectInvalidJsonQuery, jsonQuery), ReturnCodeApplicationError, ErrorTableObjectInvalidJsonQuery),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectArgumentsLengthError struct {
@@ -795,9 +555,8 @@ type TableObjectArgumentsLengthError struct {
 }
 
 func NewTableObjectArgumentsLengthError(expr parser.FormatSpecifiedFunction, argLen int) error {
-	return &TableObjectArgumentsLengthError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectArgumentsLength, expr.Type.Literal, argLen), ReturnCodeApplicationError, ErrorTableObjectArgumentsLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectJsonArgumentsLengthError struct {
@@ -805,9 +564,8 @@ type TableObjectJsonArgumentsLengthError struct {
 }
 
 func NewTableObjectJsonArgumentsLengthError(expr parser.FormatSpecifiedFunction, argLen int) error {
-	return &TableObjectJsonArgumentsLengthError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectJsonArgumentsLength, expr.Type.Literal, argLen), ReturnCodeApplicationError, ErrorTableObjectJsonArgumentsLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableObjectInvalidArgumentError struct {
@@ -815,9 +573,8 @@ type TableObjectInvalidArgumentError struct {
 }
 
 func NewTableObjectInvalidArgumentError(expr parser.FormatSpecifiedFunction, message string) error {
-	return &TableObjectInvalidArgumentError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableObjectInvalidArgument, expr.Type.Literal, message), ReturnCodeApplicationError, ErrorTableObjectInvalidArgument),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type CursorRedeclaredError struct {
@@ -825,9 +582,8 @@ type CursorRedeclaredError struct {
 }
 
 func NewCursorRedeclaredError(cursor parser.Identifier) error {
-	return &CursorRedeclaredError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgCursorRedeclared, cursor), ReturnCodeApplicationError, ErrorCursorRedeclared),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UndeclaredCursorError struct {
@@ -835,59 +591,44 @@ type UndeclaredCursorError struct {
 }
 
 func NewUndeclaredCursorError(cursor parser.Identifier) error {
-	return &UndeclaredCursorError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgUndeclaredCursor, cursor), ReturnCodeApplicationError, ErrorUndeclaredCursor),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type CursorClosedError struct {
 	*BaseError
 }
 
-func NewCursorClosedError(cursor parser.Identifier) error {
-	return &CursorClosedError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgCursorClosed, cursor), ReturnCodeApplicationError, ErrorCursorClosed),
-	}
-}
+func NewCursorClosedError(cursor parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type CursorOpenError struct {
 	*BaseError
 }
 
-func NewCursorOpenError(cursor parser.Identifier) error {
-	return &CursorOpenError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgCursorOpen, cursor), ReturnCodeApplicationError, ErrorCursorOpen),
-	}
-}
+func NewCursorOpenError(cursor parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type InvalidCursorStatementError struct {
 	*BaseError
 }
 
 func NewInvalidCursorStatementError(statement parser.Identifier) error {
-	return &InvalidCursorStatementError{
-		NewBaseError(statement, fmt.Sprintf(ErrMsgInvalidCursorStatement, statement), ReturnCodeApplicationError, ErrorInvalidCursorStatement),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type PseudoCursorError struct {
 	*BaseError
 }
 
-func NewPseudoCursorError(cursor parser.Identifier) error {
-	return &PseudoCursorError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgPseudoCursor, cursor), ReturnCodeApplicationError, ErrorPseudoCursor),
-	}
-}
+func NewPseudoCursorError(cursor parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type CursorFetchLengthError struct {
 	*BaseError
 }
 
 func NewCursorFetchLengthError(cursor parser.Identifier, returnLen int) error {
-	return &CursorFetchLengthError{
-		NewBaseError(cursor, fmt.Sprintf(ErrMsgCursorFetchLength, cursor, FormatCount(returnLen, "value")), ReturnCodeApplicationError, ErrorCursorFetchLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidFetchPositionError struct {
@@ -895,9 +636,8 @@ type InvalidFetchPositionError struct {
 }
 
 func NewInvalidFetchPositionError(position parser.FetchPosition) error {
-	return &InvalidFetchPositionError{
-		NewBaseError(position, fmt.Sprintf(ErrMsgInvalidFetchPosition, position.Number), ReturnCodeApplicationError, ErrorInvalidFetchPosition),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InLineTableRedefinedError struct {
@@ -905,9 +645,8 @@ type InLineTableRedefinedError struct {
 }
 
 func NewInLineTableRedefinedError(table parser.Identifier) error {
-	return &InLineTableRedefinedError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgInlineTableRedefined, table), ReturnCodeApplicationError, ErrorInlineTableRedefined),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UndefinedInLineTableError struct {
@@ -915,9 +654,8 @@ type UndefinedInLineTableError struct {
 }
 
 func NewUndefinedInLineTableError(table parser.Identifier) error {
-	return &UndefinedInLineTableError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgUndefinedInlineTable, table), ReturnCodeApplicationError, ErrorUndefinedInlineTable),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InlineTableFieldLengthError struct {
@@ -925,93 +663,62 @@ type InlineTableFieldLengthError struct {
 }
 
 func NewInlineTableFieldLengthError(query parser.SelectQuery, table parser.Identifier, fieldLen int) error {
-	selectClause := searchSelectClause(query)
-
-	return &InlineTableFieldLengthError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgInlineTableFieldLength, FormatCount(fieldLen, "field"), table), ReturnCodeApplicationError, ErrorInlineTableFieldLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FileNotExistError struct {
 	*BaseError
 }
 
-func NewFileNotExistError(file parser.QueryExpression) error {
-	return &FileNotExistError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgFileNotExist, file), ReturnCodeIOError, ErrorFileNotExist),
-	}
-}
+func NewFileNotExistError(file parser.QueryExpression) error { _ = "STUB: not implemented"; return nil }
 
 type FileAlreadyExistError struct {
 	*BaseError
 }
 
-func NewFileAlreadyExistError(file parser.Identifier) error {
-	return &FileAlreadyExistError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgFileAlreadyExist, file), ReturnCodeIOError, ErrorFileAlreadyExist),
-	}
-}
+func NewFileAlreadyExistError(file parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type FileUnableToReadError struct {
 	*BaseError
 }
 
-func NewFileUnableToReadError(file parser.Identifier) error {
-	return &FileUnableToReadError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgFileUnableToRead, file), ReturnCodeIOError, ErrorFileUnableToRead),
-	}
-}
+func NewFileUnableToReadError(file parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type FileLockTimeoutError struct {
 	*BaseError
 }
 
-func NewFileLockTimeoutError(file parser.Identifier) error {
-	return &FileLockTimeoutError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgFileLockTimeout, file.Literal), ReturnCodeContextDone, ErrorFileLockTimeout),
-	}
-}
+func NewFileLockTimeoutError(file parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type FileNameAmbiguousError struct {
 	*BaseError
 }
 
-func NewFileNameAmbiguousError(file parser.Identifier) error {
-	return &FileNameAmbiguousError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgFileNameAmbiguous, file), ReturnCodeApplicationError, ErrorFileNameAmbiguous),
-	}
-}
+func NewFileNameAmbiguousError(file parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type DataParsingError struct {
 	*BaseError
 }
 
 func NewDataParsingError(file parser.QueryExpression, filepath string, message string) error {
-	return &DataParsingError{
-		NewBaseError(file, fmt.Sprintf(ErrMsgDataParsing, filepath, message), ReturnCodeApplicationError, ErrorDataParsing),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DataEncodingError struct {
 	*BaseError
 }
 
-func NewDataEncodingError(message string) error {
-	return &DataEncodingError{
-		NewBaseErrorWithPrefix("", fmt.Sprintf(ErrMsgDataEncoding, message), ReturnCodeApplicationError, ErrorDataEncoding),
-	}
-}
+func NewDataEncodingError(message string) error { _ = "STUB: not implemented"; return nil }
 
 type TableFieldLengthError struct {
 	*BaseError
 }
 
 func NewTableFieldLengthError(query parser.SelectQuery, table parser.Identifier, fieldLen int) error {
-	selectClause := searchSelectClause(query)
-
-	return &TableFieldLengthError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgTableFieldLength, FormatCount(fieldLen, "field"), table), ReturnCodeApplicationError, ErrorTableFieldLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TemporaryTableRedeclaredError struct {
@@ -1019,9 +726,8 @@ type TemporaryTableRedeclaredError struct {
 }
 
 func NewTemporaryTableRedeclaredError(table parser.Identifier) error {
-	return &TemporaryTableRedeclaredError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgTemporaryTableRedeclared, table), ReturnCodeApplicationError, ErrorTemporaryTableRedeclared),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UndeclaredTemporaryTableError struct {
@@ -1029,9 +735,8 @@ type UndeclaredTemporaryTableError struct {
 }
 
 func NewUndeclaredTemporaryTableError(table parser.QueryExpression) error {
-	return &UndeclaredTemporaryTableError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgUndeclaredTemporaryTable, table), ReturnCodeApplicationError, ErrorUndeclaredTemporaryTable),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TemporaryTableFieldLengthError struct {
@@ -1039,11 +744,8 @@ type TemporaryTableFieldLengthError struct {
 }
 
 func NewTemporaryTableFieldLengthError(query parser.SelectQuery, table parser.Identifier, fieldLen int) error {
-	selectClause := searchSelectClause(query)
-
-	return &TemporaryTableFieldLengthError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgTemporaryTableFieldLength, FormatCount(fieldLen, "field"), table), ReturnCodeApplicationError, ErrorTemporaryTableFieldLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DuplicateTableNameError struct {
@@ -1051,39 +753,29 @@ type DuplicateTableNameError struct {
 }
 
 func NewDuplicateTableNameError(table parser.Identifier) error {
-	return &DuplicateTableNameError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgDuplicateTableName, table), ReturnCodeApplicationError, ErrorDuplicateTableName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableNotLoadedError struct {
 	*BaseError
 }
 
-func NewTableNotLoadedError(table parser.Identifier) error {
-	return &TableNotLoadedError{
-		NewBaseError(table, fmt.Sprintf(ErrMsgTableNotLoaded, table), ReturnCodeApplicationError, ErrorTableNotLoaded),
-	}
-}
+func NewTableNotLoadedError(table parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type StdinEmptyError struct {
 	*BaseError
 }
 
-func NewStdinEmptyError(stdin parser.Stdin) error {
-	return &StdinEmptyError{
-		NewBaseError(stdin, ErrMsgStdinEmpty, ReturnCodeApplicationError, ErrorStdinEmpty),
-	}
-}
+func NewStdinEmptyError(stdin parser.Stdin) error { _ = "STUB: not implemented"; return nil }
 
 type InlineTableCannotBeUpdatedError struct {
 	*BaseError
 }
 
 func NewInlineTableCannotBeUpdatedError(expr parser.QueryExpression) error {
-	return &InlineTableCannotBeUpdatedError{
-		NewBaseError(expr, ErrMsgInlineTableCannotBeUpdated, ReturnCodeApplicationError, ErrorInlineTableCannotBeUpdated),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type AliasMustBeSpecifiedForUpdateError struct {
@@ -1091,9 +783,8 @@ type AliasMustBeSpecifiedForUpdateError struct {
 }
 
 func NewAliasMustBeSpecifiedForUpdateError(expr parser.QueryExpression) error {
-	return &AliasMustBeSpecifiedForUpdateError{
-		NewBaseError(expr, ErrMsgAliasMustBeSpecifiedForUpdate, ReturnCodeApplicationError, ErrorAliasMustBeSpecifiedForUpdate),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type RowValueLengthInComparisonError struct {
@@ -1101,9 +792,8 @@ type RowValueLengthInComparisonError struct {
 }
 
 func NewRowValueLengthInComparisonError(expr parser.QueryExpression, valueLen int) error {
-	return &RowValueLengthInComparisonError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgRowValueLengthInComparison, FormatCount(valueLen, "value")), ReturnCodeApplicationError, ErrorRowValueLengthInComparison),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SelectFieldLengthInComparisonError struct {
@@ -1111,9 +801,8 @@ type SelectFieldLengthInComparisonError struct {
 }
 
 func NewSelectFieldLengthInComparisonError(query parser.Subquery, valueLen int) error {
-	return &SelectFieldLengthInComparisonError{
-		NewBaseError(query, fmt.Sprintf(ErrMsgFieldLengthInComparison, FormatCount(valueLen, "field")), ReturnCodeApplicationError, ErrorFieldLengthInComparison),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidLimitPercentageError struct {
@@ -1121,9 +810,8 @@ type InvalidLimitPercentageError struct {
 }
 
 func NewInvalidLimitPercentageError(clause parser.LimitClause) error {
-	return &InvalidLimitPercentageError{
-		NewBaseError(clause, fmt.Sprintf(ErrMsgInvalidLimitPercentage, clause.Value), ReturnCodeApplicationError, ErrorInvalidLimitPercentage),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidLimitNumberError struct {
@@ -1131,9 +819,8 @@ type InvalidLimitNumberError struct {
 }
 
 func NewInvalidLimitNumberError(clause parser.LimitClause) error {
-	return &InvalidLimitNumberError{
-		NewBaseError(clause, fmt.Sprintf(ErrMsgInvalidLimitNumber, clause.Value), ReturnCodeApplicationError, ErrorInvalidLimitNumber),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidOffsetNumberError struct {
@@ -1141,9 +828,8 @@ type InvalidOffsetNumberError struct {
 }
 
 func NewInvalidOffsetNumberError(clause parser.OffsetClause) error {
-	return &InvalidOffsetNumberError{
-		NewBaseError(clause, fmt.Sprintf(ErrMsgInvalidOffsetNumber, clause.Value), ReturnCodeApplicationError, ErrorInvalidOffsetNumber),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type CombinedSetFieldLengthError struct {
@@ -1151,11 +837,8 @@ type CombinedSetFieldLengthError struct {
 }
 
 func NewCombinedSetFieldLengthError(selectEntity parser.QueryExpression, fieldLen int) error {
-	selectClause := searchSelectClauseInSelectEntity(selectEntity)
-
-	return &CombinedSetFieldLengthError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgCombinedSetFieldLength, FormatCount(fieldLen, "field")), ReturnCodeApplicationError, ErrorCombinedSetFieldLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type RecursionExceededLimitError struct {
@@ -1163,11 +846,8 @@ type RecursionExceededLimitError struct {
 }
 
 func NewRecursionExceededLimitError(selectEntity parser.QueryExpression, limit int64) error {
-	selectClause := searchSelectClauseInSelectEntity(selectEntity)
-
-	return &RecursionExceededLimitError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgRecursionExceededLimit, limit), ReturnCodeApplicationError, ErrorRecursionExceededLimit),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type NestedRecursionError struct {
@@ -1175,9 +855,8 @@ type NestedRecursionError struct {
 }
 
 func NewNestedRecursionError(expr parser.QueryExpression) error {
-	return &RecursionExceededLimitError{
-		NewBaseError(expr, ErrMsgNestedRecursion, ReturnCodeApplicationError, ErrorNestedRecursion),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InsertRowValueLengthError struct {
@@ -1185,9 +864,8 @@ type InsertRowValueLengthError struct {
 }
 
 func NewInsertRowValueLengthError(rowValue parser.RowValue, valueLen int) error {
-	return &InsertRowValueLengthError{
-		NewBaseError(rowValue, fmt.Sprintf(ErrMsgInsertRowValueLength, FormatCount(valueLen, "value")), ReturnCodeApplicationError, ErrorInsertRowValueLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InsertSelectFieldLengthError struct {
@@ -1195,11 +873,8 @@ type InsertSelectFieldLengthError struct {
 }
 
 func NewInsertSelectFieldLengthError(query parser.SelectQuery, fieldLen int) error {
-	selectClause := searchSelectClause(query)
-
-	return &InsertSelectFieldLengthError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgInsertSelectFieldLength, FormatCount(fieldLen, "field")), ReturnCodeApplicationError, ErrorInsertSelectFieldLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UpdateFieldNotExistError struct {
@@ -1207,9 +882,8 @@ type UpdateFieldNotExistError struct {
 }
 
 func NewUpdateFieldNotExistError(field parser.QueryExpression) error {
-	return &UpdateFieldNotExistError{
-		NewBaseError(field, fmt.Sprintf(ErrMsgUpdateFieldNotExist, field), ReturnCodeApplicationError, ErrorUpdateFieldNotExist),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type UpdateValueAmbiguousError struct {
@@ -1217,9 +891,8 @@ type UpdateValueAmbiguousError struct {
 }
 
 func NewUpdateValueAmbiguousError(field parser.QueryExpression, value parser.QueryExpression) error {
-	return &UpdateValueAmbiguousError{
-		NewBaseError(field, fmt.Sprintf(ErrMsgUpdateValueAmbiguous, value, field), ReturnCodeApplicationError, ErrorUpdateValueAmbiguous),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type ReplaceKeyNotSetError struct {
@@ -1227,9 +900,8 @@ type ReplaceKeyNotSetError struct {
 }
 
 func NewReplaceKeyNotSetError(key parser.QueryExpression) error {
-	return &ReplaceKeyNotSetError{
-		NewBaseError(key, fmt.Sprintf(ErrMsgReplaceKeyNotSet, key), ReturnCodeApplicationError, ErrorReplaceKeyNotSet),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DeleteTableNotSpecifiedError struct {
@@ -1237,9 +909,8 @@ type DeleteTableNotSpecifiedError struct {
 }
 
 func NewDeleteTableNotSpecifiedError(query parser.DeleteQuery) error {
-	return &DeleteTableNotSpecifiedError{
-		NewBaseError(query, ErrMsgDeleteTableNotSpecified, ReturnCodeApplicationError, ErrorDeleteTableNotSpecified),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type ShowInvalidObjectTypeError struct {
@@ -1247,9 +918,8 @@ type ShowInvalidObjectTypeError struct {
 }
 
 func NewShowInvalidObjectTypeError(expr parser.Expression, objectType string) error {
-	return &ShowInvalidObjectTypeError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgShowInvalidObjectType, objectType), ReturnCodeApplicationError, ErrorShowInvalidObjectType),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type ReplaceValueLengthError struct {
@@ -1257,9 +927,8 @@ type ReplaceValueLengthError struct {
 }
 
 func NewReplaceValueLengthError(expr parser.Expression, message string) error {
-	return &ReplaceValueLengthError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgReplaceValueLength, message), ReturnCodeApplicationError, ErrorReplaceValueLength),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SourceInvalidFilePathError struct {
@@ -1267,29 +936,23 @@ type SourceInvalidFilePathError struct {
 }
 
 func NewSourceInvalidFilePathError(source parser.Source, arg parser.QueryExpression) error {
-	return &SourceInvalidFilePathError{
-		NewBaseError(source, fmt.Sprintf(ErrMsgSourceInvalidFilePath, arg), ReturnCodeApplicationError, ErrorSourceInvalidFilePath),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidFlagNameError struct {
 	*BaseError
 }
 
-func NewInvalidFlagNameError(expr parser.Flag) error {
-	return &InvalidFlagNameError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidFlagName, expr.String()), ReturnCodeApplicationError, ErrorInvalidFlagName),
-	}
-}
+func NewInvalidFlagNameError(expr parser.Flag) error { _ = "STUB: not implemented"; return nil }
 
 type InvalidRuntimeInformationError struct {
 	*BaseError
 }
 
 func NewInvalidRuntimeInformationError(expr parser.RuntimeInformation) error {
-	return &InvalidRuntimeInformationError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidRuntimeInformation, expr), ReturnCodeApplicationError, ErrorInvalidRuntimeInformation),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FlagValueNotAllowedFormatError struct {
@@ -1297,9 +960,8 @@ type FlagValueNotAllowedFormatError struct {
 }
 
 func NewFlagValueNotAllowedFormatError(setFlag parser.SetFlag) error {
-	return &FlagValueNotAllowedFormatError{
-		NewBaseError(setFlag, fmt.Sprintf(ErrMsgFlagValueNowAllowedFormat, setFlag.Value, setFlag.Flag.String()), ReturnCodeApplicationError, ErrorFlagValueNowAllowedFormat),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidFlagValueError struct {
@@ -1307,9 +969,8 @@ type InvalidFlagValueError struct {
 }
 
 func NewInvalidFlagValueError(expr parser.SetFlag, message string) error {
-	return &InvalidFlagValueError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidFlagValue, message), ReturnCodeApplicationError, ErrorInvalidFlagValue),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type AddFlagNotSupportedNameError struct {
@@ -1317,9 +978,8 @@ type AddFlagNotSupportedNameError struct {
 }
 
 func NewAddFlagNotSupportedNameError(expr parser.AddFlagElement) error {
-	return &AddFlagNotSupportedNameError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgAddFlagNotSupportedName, expr.Flag.String()), ReturnCodeApplicationError, ErrorAddFlagNotSupportedName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type RemoveFlagNotSupportedNameError struct {
@@ -1327,9 +987,8 @@ type RemoveFlagNotSupportedNameError struct {
 }
 
 func NewRemoveFlagNotSupportedNameError(expr parser.RemoveFlagElement) error {
-	return &RemoveFlagNotSupportedNameError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgRemoveFlagNotSupportedName, expr.Flag.String()), ReturnCodeApplicationError, ErrorRemoveFlagNotSupportedName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidFlagValueToBeRemoveError struct {
@@ -1337,29 +996,23 @@ type InvalidFlagValueToBeRemoveError struct {
 }
 
 func NewInvalidFlagValueToBeRemovedError(unsetFlag parser.RemoveFlagElement) error {
-	return &InvalidFlagValueToBeRemoveError{
-		NewBaseError(unsetFlag, fmt.Sprintf(ErrMsgInvalidFlagValueToBeRemoved, unsetFlag.Value, unsetFlag.Flag.String()), ReturnCodeApplicationError, ErrorInvalidFlagValueToBeRemoved),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type NotTableError struct {
 	*BaseError
 }
 
-func NewNotTableError(expr parser.QueryExpression) error {
-	return &NotTableError{
-		NewBaseError(expr, ErrMsgNotTable, ReturnCodeApplicationError, ErrorNotTable),
-	}
-}
+func NewNotTableError(expr parser.QueryExpression) error { _ = "STUB: not implemented"; return nil }
 
 type InvalidTableAttributeNameError struct {
 	*BaseError
 }
 
 func NewInvalidTableAttributeNameError(expr parser.Identifier) error {
-	return &InvalidTableAttributeNameError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidTableAttributeName, expr), ReturnCodeApplicationError, ErrorInvalidTableAttributeName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TableAttributeValueNotAllowedFormatError struct {
@@ -1367,9 +1020,8 @@ type TableAttributeValueNotAllowedFormatError struct {
 }
 
 func NewTableAttributeValueNotAllowedFormatError(expr parser.SetTableAttribute) error {
-	return &TableAttributeValueNotAllowedFormatError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgTableAttributeValueNotAllowedFormat, expr.Value, expr.Attribute), ReturnCodeApplicationError, ErrorTableAttributeValueNotAllowedFormat),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidTableAttributeValueError struct {
@@ -1377,49 +1029,35 @@ type InvalidTableAttributeValueError struct {
 }
 
 func NewInvalidTableAttributeValueError(expr parser.SetTableAttribute, message string) error {
-	return &InvalidTableAttributeValueError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidTableAttributeValue, message), ReturnCodeApplicationError, ErrorInvalidTableAttributeValue),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidEventNameError struct {
 	*BaseError
 }
 
-func NewInvalidEventNameError(expr parser.Identifier) error {
-	return &InvalidEventNameError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidEventName, expr), ReturnCodeApplicationError, ErrorInvalidEventName),
-	}
-}
+func NewInvalidEventNameError(expr parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type InternalRecordIdNotExistError struct {
 	*BaseError
 }
 
-func NewInternalRecordIdNotExistError() error {
-	return &InternalRecordIdNotExistError{
-		NewBaseError(parser.NewNullValue(), ErrMsgInternalRecordIdNotExist, ReturnCodeApplicationError, ErrorInternalRecordIdNotExist),
-	}
-}
+func NewInternalRecordIdNotExistError() error { _ = "STUB: not implemented"; return nil }
 
 type InternalRecordIdEmptyError struct {
 	*BaseError
 }
 
-func NewInternalRecordIdEmptyError() error {
-	return &InternalRecordIdEmptyError{
-		NewBaseError(parser.NewNullValue(), ErrMsgInternalRecordIdEmpty, ReturnCodeApplicationError, ErrorInternalRecordIdEmpty),
-	}
-}
+func NewInternalRecordIdEmptyError() error { _ = "STUB: not implemented"; return nil }
 
 type FieldLengthNotMatchError struct {
 	*BaseError
 }
 
 func NewFieldLengthNotMatchError(expr parser.QueryExpression) error {
-	return &FieldLengthNotMatchError{
-		NewBaseError(expr, ErrMsgFieldLengthNotMatch, ReturnCodeApplicationError, ErrorFieldLengthNotMatch),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type RowValueLengthInListError struct {
@@ -1427,51 +1065,36 @@ type RowValueLengthInListError struct {
 	Index int
 }
 
-func NewRowValueLengthInListError(i int) error {
-	return &RowValueLengthInListError{
-		BaseError: NewBaseError(parser.NewNullValue(), fmt.Sprintf(ErrMsgRowValueLengthInList, i), ReturnCodeApplicationError, ErrorRowValueLengthInList),
-		Index:     i,
-	}
-}
+func NewRowValueLengthInListError(i int) error { _ = "STUB: not implemented"; return nil }
 
 type FormatStringLengthNotMatchError struct {
 	*BaseError
 }
 
-func NewFormatStringLengthNotMatchError() error {
-	return &FormatStringLengthNotMatchError{
-		BaseError: NewBaseError(parser.NewNullValue(), ErrMsgFormatStringLengthNotMatch, ReturnCodeApplicationError, ErrorFormatStringLengthNotMatch),
-	}
-}
+func NewFormatStringLengthNotMatchError() error { _ = "STUB: not implemented"; return nil }
 
 type UnknownFormatPlaceholderError struct {
 	*BaseError
 }
 
 func NewUnknownFormatPlaceholderError(placeholder rune) error {
-	return &UnknownFormatPlaceholderError{
-		BaseError: NewBaseError(parser.NewNullValue(), fmt.Sprintf(ErrMsgUnknownFormatPlaceholder, string(placeholder)), ReturnCodeApplicationError, ErrorUnknownFormatPlaceholder),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type FormatUnexpectedTerminationError struct {
 	*BaseError
 }
 
-func NewFormatUnexpectedTerminationError() error {
-	return &FormatUnexpectedTerminationError{
-		BaseError: NewBaseError(parser.NewNullValue(), ErrMsgFormatUnexpectedTermination, ReturnCodeApplicationError, ErrorFormatUnexpectedTermination),
-	}
-}
+func NewFormatUnexpectedTerminationError() error { _ = "STUB: not implemented"; return nil }
 
 type ExternalCommandError struct {
 	*BaseError
 }
 
 func NewExternalCommandError(expr parser.Expression, message string) error {
-	return &ExternalCommandError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgExternalCommand, message), ReturnCodeSystemError, ErrorExternalCommand),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type HttpRequestError struct {
@@ -1479,9 +1102,8 @@ type HttpRequestError struct {
 }
 
 func NewHttpRequestError(expr parser.Expression, url string, message string) error {
-	return &HttpRequestError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgHttpRequest, url, message), ReturnCodeSystemError, ErrorHttpRequestError),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type InvalidReloadTypeError struct {
@@ -1489,9 +1111,8 @@ type InvalidReloadTypeError struct {
 }
 
 func NewInvalidReloadTypeError(expr parser.Reload, name string) error {
-	return &InvalidReloadTypeError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgInvalidReloadType, name), ReturnCodeApplicationError, ErrorInvalidReloadType),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type LoadConfigurationError struct {
@@ -1499,9 +1120,8 @@ type LoadConfigurationError struct {
 }
 
 func NewLoadConfigurationError(expr parser.Expression, message string) error {
-	return &LoadConfigurationError{
-		NewBaseError(expr, fmt.Sprintf(ErrMsgLoadConfiguration, message), ReturnCodeApplicationError, ErrorLoadConfiguration),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type DuplicateStatementNameError struct {
@@ -1509,29 +1129,23 @@ type DuplicateStatementNameError struct {
 }
 
 func NewDuplicateStatementNameError(name parser.Identifier) error {
-	return &DuplicateStatementNameError{
-		NewBaseError(name, fmt.Sprintf(ErrMsgDuplicateStatementName, name.Literal), ReturnCodeApplicationError, ErrorDuplicateStatementName),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type StatementNotExistError struct {
 	*BaseError
 }
 
-func NewStatementNotExistError(name parser.Identifier) error {
-	return &DuplicateStatementNameError{
-		NewBaseError(name, fmt.Sprintf(ErrMsgStatementNotExist, name.Literal), ReturnCodeApplicationError, ErrorStatementNotExist),
-	}
-}
+func NewStatementNotExistError(name parser.Identifier) error { _ = "STUB: not implemented"; return nil }
 
 type StatementReplaceValueNotSpecifiedError struct {
 	*BaseError
 }
 
 func NewStatementReplaceValueNotSpecifiedError(placeholder parser.Placeholder) error {
-	return &StatementReplaceValueNotSpecifiedError{
-		NewBaseError(placeholder, fmt.Sprintf(ErrMsgStatementReplaceValueNotSpecified, placeholder), ReturnCodeApplicationError, ErrorStatementReplaceValueNotSpecified),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SelectIntoQueryFieldLengthNotMatchError struct {
@@ -1539,11 +1153,8 @@ type SelectIntoQueryFieldLengthNotMatchError struct {
 }
 
 func NewSelectIntoQueryFieldLengthNotMatchError(query parser.SelectQuery, fieldLen int) error {
-	selectClause := searchSelectClause(query)
-
-	return &SelectIntoQueryFieldLengthNotMatchError{
-		NewBaseError(selectClause, fmt.Sprintf(ErrMsgSelectIntoQueryFieldLengthNotMatch, FormatCount(fieldLen, "field")), ReturnCodeApplicationError, ErrorSelectIntoQueryFieldLengthNotMatch),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type SelectIntoQueryTooManyRecordsError struct {
@@ -1551,11 +1162,8 @@ type SelectIntoQueryTooManyRecordsError struct {
 }
 
 func NewSelectIntoQueryTooManyRecordsError(query parser.SelectQuery) error {
-	selectClause := searchSelectClause(query)
-
-	return &SelectIntoQueryTooManyRecordsError{
-		NewBaseError(selectClause, ErrMsgSelectIntoQueryTooManyRecords, ReturnCodeApplicationError, ErrorSelectIntoQueryTooManyRecords),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type IntegerDevidedByZeroError struct {
@@ -1563,60 +1171,30 @@ type IntegerDevidedByZeroError struct {
 }
 
 func NewIntegerDevidedByZeroError(expr parser.Arithmetic) error {
-	return &IntegerDevidedByZeroError{
-		NewBaseError(expr, ErrMsgIntegerDevidedByZero, ReturnCodeApplicationError, ErrorIntegerDevidedByZero),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func searchSelectClause(query parser.SelectQuery) parser.SelectClause {
-	return searchSelectClauseInSelectEntity(query.SelectEntity)
+	_ = "STUB: not implemented"
+	return *new(parser.SelectClause)
 }
 
 func searchSelectClauseInSelectEntity(selectEntity parser.QueryExpression) parser.SelectClause {
-	if entity, ok := selectEntity.(parser.SelectEntity); ok {
-		return entity.SelectClause.(parser.SelectClause)
-	}
-	return searchSelectClauseInSelectSetEntity(selectEntity.(parser.SelectSet).LHS)
+	_ = "STUB: not implemented"
+	return *new(parser.SelectClause)
 }
 
 func searchSelectClauseInSelectSetEntity(selectSetEntity parser.QueryExpression) parser.SelectClause {
-	if subquery, ok := selectSetEntity.(parser.Subquery); ok {
-		return searchSelectClause(subquery.Query)
-	}
-	return searchSelectClauseInSelectEntity(selectSetEntity)
+	_ = "STUB: not implemented"
+	return *new(parser.SelectClause)
 }
 
 func ConvertFileHandlerError(err error, ident parser.Identifier) error {
-	switch err.(type) {
-	case *file.TimeoutError:
-		err = NewFileLockTimeoutError(ident)
-	case *file.ContextCanceled:
-		err = NewContextCanceled(err.Error())
-	case *file.ContextDone:
-		err = NewContextDone(err.Error())
-	case *file.NotExistError:
-		err = NewFileNotExistError(ident)
-	case *file.AlreadyExistError:
-		err = NewFileAlreadyExistError(ident)
-	default:
-		err = NewIOError(ident, err.Error())
-	}
-	return err
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func ConvertLoadConfigurationError(err error) error {
-	switch err.(type) {
-	case *file.ContextDone:
-		err = NewContextDone(err.Error())
-	default:
-		err = NewLoadConfigurationError(nil, err.Error())
-	}
-	return err
-}
+func ConvertLoadConfigurationError(err error) error { _ = "STUB: not implemented"; return nil }
 
-func ConvertContextError(err error) error {
-	if err == context.Canceled {
-		return NewContextCanceled(err.Error())
-	}
-	return NewContextDone(err.Error())
-}
+func ConvertContextError(err error) error { _ = "STUB: not implemented"; return nil }

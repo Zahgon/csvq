@@ -1,7 +1,6 @@
 package json
 
 import (
-	"strings"
 	"sync"
 )
 
@@ -13,45 +12,18 @@ type PathMap struct {
 	mtx *sync.Mutex
 }
 
-func NewPathMap() PathMap {
-	return PathMap{
-		m:   &sync.Map{},
-		mtx: &sync.Mutex{},
-	}
-}
+func NewPathMap() PathMap { _ = "STUB: not implemented"; return *new(PathMap) }
 
-func (pmap PathMap) store(key string, value PathExpression) {
-	pmap.m.Store(key, value)
-}
+func (pmap PathMap) store(key string, value PathExpression) { _ = "STUB: not implemented"; return }
 
 func (pmap PathMap) load(key string) (PathExpression, bool) {
-	v, ok := pmap.m.Load(key)
-	if ok && v != nil {
-		return v.(PathExpression), ok
-	}
-	return nil, ok
+	_ = "STUB: not implemented"
+	return *new(PathExpression), false
 }
 
 func (pmap PathMap) Parse(s string) (PathExpression, error) {
-	s = strings.TrimSpace(s)
-
-	if e, ok := pmap.load(s); ok {
-		return e, nil
-	}
-
-	pmap.mtx.Lock()
-	defer pmap.mtx.Unlock()
-
-	if e, ok := pmap.load(s); ok {
-		return e, nil
-	}
-
-	e, err := ParsePath(s)
-	if err != nil || e == nil {
-		return nil, err
-	}
-	pmap.store(s, e)
-	return e, nil
+	_ = "STUB: not implemented"
+	return *new(PathExpression), nil
 }
 
 type QueryMap struct {
@@ -59,45 +31,16 @@ type QueryMap struct {
 	mtx *sync.Mutex
 }
 
-func NewQueryMap() QueryMap {
-	return QueryMap{
-		m:   &sync.Map{},
-		mtx: &sync.Mutex{},
-	}
-}
+func NewQueryMap() QueryMap { _ = "STUB: not implemented"; return *new(QueryMap) }
 
-func (qmap QueryMap) store(key string, value QueryExpression) {
-	qmap.m.Store(key, value)
-}
+func (qmap QueryMap) store(key string, value QueryExpression) { _ = "STUB: not implemented"; return }
 
 func (qmap QueryMap) load(key string) (QueryExpression, bool) {
-	v, ok := qmap.m.Load(key)
-	if ok && v != nil {
-		return v.(QueryExpression), ok
-	}
-	return nil, ok
+	_ = "STUB: not implemented"
+	return *new(QueryExpression), false
 }
+
 func (qmap QueryMap) Parse(s string) (QueryExpression, error) {
-	s = strings.TrimSpace(s)
-	if len(s) < 1 {
-		return nil, nil
-	}
-
-	if e, ok := qmap.load(s); ok {
-		return e, nil
-	}
-
-	qmap.mtx.Lock()
-	defer qmap.mtx.Unlock()
-
-	if e, ok := qmap.load(s); ok {
-		return e, nil
-	}
-
-	e, err := ParseQuery(s)
-	if err != nil || e == nil {
-		return nil, err
-	}
-	qmap.store(s, e)
-	return e, nil
+	_ = "STUB: not implemented"
+	return *new(QueryExpression), nil
 }

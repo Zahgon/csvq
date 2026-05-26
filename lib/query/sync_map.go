@@ -1,7 +1,6 @@
 package query
 
 import (
-	"sort"
 	"sync"
 )
 
@@ -10,71 +9,26 @@ type SyncMap struct {
 	mtx *sync.Mutex
 }
 
-func NewSyncMap() *SyncMap {
-	return &SyncMap{
-		m:   &sync.Map{},
-		mtx: &sync.Mutex{},
-	}
-}
+func NewSyncMap() *SyncMap { _ = "STUB: not implemented"; return nil }
 
-func (m SyncMap) store(key string, value interface{}) {
-	m.m.Store(key, value)
-}
+func (m SyncMap) store(key string, value interface{}) { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) load(key string) (interface{}, bool) {
-	return m.m.Load(key)
-}
+func (m SyncMap) load(key string) (interface{}, bool) { _ = "STUB: not implemented"; return nil, false }
 
-func (m SyncMap) delete(key string) {
-	m.m.Delete(key)
-}
+func (m SyncMap) delete(key string) { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) exists(name string) bool {
-	_, ok := m.m.Load(name)
-	return ok
-}
+func (m SyncMap) exists(name string) bool { _ = "STUB: not implemented"; return false }
 
-func (m SyncMap) lock() {
-	m.mtx.Lock()
-}
+func (m SyncMap) lock() { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) unlock() {
-	m.mtx.Unlock()
-}
+func (m SyncMap) unlock() { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) Clear() {
-	m.lock()
-	m.Range(func(key, value interface{}) bool {
-		m.m.Delete(key)
-		return true
-	})
-	m.unlock()
-}
+func (m SyncMap) Clear() { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) Range(fn func(key, value interface{}) bool) {
-	m.m.Range(fn)
-}
+func (m SyncMap) Range(fn func(key, value interface{}) bool) { _ = "STUB: not implemented"; return }
 
-func (m SyncMap) Keys() []string {
-	keys := make([]string, 0, 10)
-	m.m.Range(func(key, value interface{}) bool {
-		keys = append(keys, key.(string))
-		return true
-	})
-	return keys
-}
+func (m SyncMap) Keys() []string { _ = "STUB: not implemented"; return nil }
 
-func (m SyncMap) Len() int {
-	cnt := 0
-	m.m.Range(func(key, value interface{}) bool {
-		cnt++
-		return true
-	})
-	return cnt
-}
+func (m SyncMap) Len() int { _ = "STUB: not implemented"; return 0 }
 
-func (m SyncMap) SortedKeys() []string {
-	keys := m.Keys()
-	sort.Strings(keys)
-	return keys
-}
+func (m SyncMap) SortedKeys() []string { _ = "STUB: not implemented"; return nil }

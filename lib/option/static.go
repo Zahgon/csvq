@@ -1,7 +1,6 @@
 package option
 
 import (
-	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -15,65 +14,30 @@ var (
 	getRand sync.Once
 )
 
-func GetRand() *rand.Rand {
-	getRand.Do(func() {
-		random = rand.New(rand.NewSource(time.Now().UnixNano()))
-	})
-	return random
-}
+func GetRand() *rand.Rand { _ = "STUB: not implemented"; return nil }
 
 func GetLocation(timezone string) (*time.Location, error) {
-	return Timezones.Get(timezone)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func Now(location *time.Location) time.Time {
-	if !TestTime.IsZero() {
-		return TestTime
-	}
-	return time.Now().In(location)
-}
+func Now(location *time.Location) time.Time { _ = "STUB: not implemented"; return *new(time.Time) }
 
 type TimezoneMap struct {
 	m   *sync.Map
 	mtx *sync.Mutex
 }
 
-func NewTimezoneMap() TimezoneMap {
-	return TimezoneMap{
-		m:   &sync.Map{},
-		mtx: &sync.Mutex{},
-	}
-}
+func NewTimezoneMap() TimezoneMap { _ = "STUB: not implemented"; return *new(TimezoneMap) }
 
-func (tzmap TimezoneMap) store(key string, value *time.Location) {
-	tzmap.m.Store(key, value)
-}
+func (tzmap TimezoneMap) store(key string, value *time.Location) { _ = "STUB: not implemented"; return }
 
 func (tzmap TimezoneMap) load(key string) (*time.Location, bool) {
-	v, ok := tzmap.m.Load(key)
-	if ok {
-		return v.(*time.Location), ok
-	}
-	return nil, ok
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 func (tzmap TimezoneMap) Get(timezone string) (*time.Location, error) {
-	if v, ok := tzmap.load(timezone); ok {
-		return v, nil
-	}
-
-	tzmap.mtx.Lock()
-	defer tzmap.mtx.Unlock()
-
-	if v, ok := tzmap.load(timezone); ok {
-		return v, nil
-	}
-
-	l, err := time.LoadLocation(timezone)
-	if err != nil {
-		return nil, fmt.Errorf("timezone %q does not exist", timezone)
-	}
-
-	tzmap.store(timezone, l)
-	return l, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

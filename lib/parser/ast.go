@@ -1,12 +1,8 @@
 package parser
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
-	"github.com/mithrandie/csvq/lib/option"
 	"github.com/mithrandie/csvq/lib/value"
 
 	"github.com/mithrandie/ternary"
@@ -42,42 +38,19 @@ type BaseExpr struct {
 	sourceFile string
 }
 
-func (e *BaseExpr) Line() int {
-	return e.line
-}
+func (e *BaseExpr) Line() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseExpr) Char() int {
-	return e.char
-}
+func (e *BaseExpr) Char() int { _ = "STUB: not implemented"; return 0 }
 
-func (e *BaseExpr) SourceFile() string {
-	return e.sourceFile
-}
+func (e *BaseExpr) SourceFile() string { _ = "STUB: not implemented"; return "" }
 
-func (e *BaseExpr) HasParseInfo() bool {
-	if e == nil {
-		return false
-	}
-	return true
-}
+func (e *BaseExpr) HasParseInfo() bool { _ = "STUB: not implemented"; return false }
 
-func (e *BaseExpr) GetBaseExpr() *BaseExpr {
-	return e
-}
+func (e *BaseExpr) GetBaseExpr() *BaseExpr { _ = "STUB: not implemented"; return nil }
 
-func (e *BaseExpr) ClearBaseExpr() {
-	e.line = 0
-	e.char = 0
-	e.sourceFile = ""
-}
+func (e *BaseExpr) ClearBaseExpr() { _ = "STUB: not implemented"; return }
 
-func NewBaseExpr(token Token) *BaseExpr {
-	return &BaseExpr{
-		line:       token.Line,
-		char:       token.Char,
-		sourceFile: token.SourceFile,
-	}
-}
+func NewBaseExpr(token Token) *BaseExpr { _ = "STUB: not implemented"; return nil }
 
 type PrimitiveType struct {
 	*BaseExpr
@@ -85,86 +58,47 @@ type PrimitiveType struct {
 	Value   value.Primary
 }
 
-func NewStringValue(s string) PrimitiveType {
-	return PrimitiveType{
-		Literal: s,
-		Value:   value.NewString(s),
-	}
-}
+func NewStringValue(s string) PrimitiveType { _ = "STUB: not implemented"; return *new(PrimitiveType) }
 
 func NewIntegerValueFromString(s string) PrimitiveType {
-	return PrimitiveType{
-		Literal: s,
-		Value:   value.NewIntegerFromString(s),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
-func NewIntegerValue(i int64) PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewInteger(i),
-	}
-}
+func NewIntegerValue(i int64) PrimitiveType { _ = "STUB: not implemented"; return *new(PrimitiveType) }
 
 func NewFloatValueFromString(s string) PrimitiveType {
-	return PrimitiveType{
-		Literal: s,
-		Value:   value.NewFloatFromString(s),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
-func NewFloatValue(f float64) PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewFloat(f),
-	}
-}
+func NewFloatValue(f float64) PrimitiveType { _ = "STUB: not implemented"; return *new(PrimitiveType) }
 
 func NewTernaryValueFromString(s string) PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewTernaryFromString(s),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
 func NewTernaryValue(t ternary.Value) PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewTernary(t),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
 func NewDatetimeValueFromString(s string, formats []string, location *time.Location) PrimitiveType {
-	return PrimitiveType{
-		Literal: s,
-		Value:   value.NewDatetimeFromString(s, formats, location),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
 func NewDatetimeValue(t time.Time) PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewDatetime(t),
-	}
+	_ = "STUB: not implemented"
+	return *new(PrimitiveType)
 }
 
-func NewNullValue() PrimitiveType {
-	return PrimitiveType{
-		Value: value.NewNull(),
-	}
-}
+func NewNullValue() PrimitiveType { _ = "STUB: not implemented"; return *new(PrimitiveType) }
 
-func (e PrimitiveType) String() string {
-	if 0 < len(e.Literal) {
-		switch e.Value.(type) {
-		case *value.String, *value.Datetime:
-			return option.QuoteString(e.Literal)
-		default:
-			return e.Literal
-		}
-	}
-	return e.Value.String()
-}
+func (e PrimitiveType) String() string { _ = "STUB: not implemented"; return "" }
 
-func (e PrimitiveType) IsInteger() bool {
-	_, ok := e.Value.(*value.Integer)
-	return ok
-}
+func (e PrimitiveType) IsInteger() bool { _ = "STUB: not implemented"; return false }
 
 type Placeholder struct {
 	*BaseExpr
@@ -173,12 +107,7 @@ type Placeholder struct {
 	Name    string
 }
 
-func (e Placeholder) String() string {
-	if len(e.Name) < 1 {
-		return fmt.Sprintf("%s{%d}", e.Literal, e.Ordinal)
-	}
-	return e.Literal
-}
+func (e Placeholder) String() string { _ = "STUB: not implemented"; return "" }
 
 type Identifier struct {
 	*BaseExpr
@@ -186,12 +115,7 @@ type Identifier struct {
 	Quoted  bool
 }
 
-func (i Identifier) String() string {
-	if i.Quoted {
-		return option.QuoteIdentifier(i.Literal)
-	}
-	return i.Literal
-}
+func (i Identifier) String() string { _ = "STUB: not implemented"; return "" }
 
 type Constant struct {
 	*BaseExpr
@@ -199,9 +123,7 @@ type Constant struct {
 	Name  string
 }
 
-func (e Constant) String() string {
-	return strings.ToUpper(e.Space) + ConstantDelimiter + strings.ToUpper(e.Name)
-}
+func (e Constant) String() string { _ = "STUB: not implemented"; return "" }
 
 type FieldReference struct {
 	*BaseExpr
@@ -209,13 +131,7 @@ type FieldReference struct {
 	Column QueryExpression
 }
 
-func (e FieldReference) String() string {
-	s := e.Column.String()
-	if 0 < len(e.View.Literal) {
-		s = e.View.String() + "." + s
-	}
-	return s
-}
+func (e FieldReference) String() string { _ = "STUB: not implemented"; return "" }
 
 type ColumnNumber struct {
 	*BaseExpr
@@ -223,45 +139,35 @@ type ColumnNumber struct {
 	Number *value.Integer
 }
 
-func (e ColumnNumber) String() string {
-	return e.View.String() + "." + e.Number.String()
-}
+func (e ColumnNumber) String() string { _ = "STUB: not implemented"; return "" }
 
 type Parentheses struct {
 	*BaseExpr
 	Expr QueryExpression
 }
 
-func (p Parentheses) String() string {
-	return putParentheses(p.Expr.String())
-}
+func (p Parentheses) String() string { _ = "STUB: not implemented"; return "" }
 
 type RowValue struct {
 	*BaseExpr
 	Value QueryExpression
 }
 
-func (e RowValue) String() string {
-	return e.Value.String()
-}
+func (e RowValue) String() string { _ = "STUB: not implemented"; return "" }
 
 type ValueList struct {
 	*BaseExpr
 	Values []QueryExpression
 }
 
-func (e ValueList) String() string {
-	return putParentheses(listQueryExpressions(e.Values))
-}
+func (e ValueList) String() string { _ = "STUB: not implemented"; return "" }
 
 type RowValueList struct {
 	*BaseExpr
 	RowValues []QueryExpression
 }
 
-func (e RowValueList) String() string {
-	return putParentheses(listQueryExpressions(e.RowValues))
-}
+func (e RowValueList) String() string { _ = "STUB: not implemented"; return "" }
 
 type SelectQuery struct {
 	*BaseExpr
@@ -272,27 +178,9 @@ type SelectQuery struct {
 	Context       Token
 }
 
-func (e SelectQuery) IsForUpdate() bool {
-	return e.Context.Token == UPDATE
-}
+func (e SelectQuery) IsForUpdate() bool { _ = "STUB: not implemented"; return false }
 
-func (e SelectQuery) String() string {
-	s := make([]string, 0)
-	if e.WithClause != nil {
-		s = append(s, e.WithClause.String())
-	}
-	s = append(s, e.SelectEntity.String())
-	if e.OrderByClause != nil {
-		s = append(s, e.OrderByClause.String())
-	}
-	if e.LimitClause != nil {
-		s = append(s, e.LimitClause.String())
-	}
-	if e.IsForUpdate() {
-		s = append(s, keyword(FOR), e.Context.String())
-	}
-	return joinWithSpace(s)
-}
+func (e SelectQuery) String() string { _ = "STUB: not implemented"; return "" }
 
 type SelectSet struct {
 	*BaseExpr
@@ -302,14 +190,7 @@ type SelectSet struct {
 	RHS      QueryExpression
 }
 
-func (e SelectSet) String() string {
-	s := []string{e.LHS.String(), e.Operator.String()}
-	if !e.All.IsEmpty() {
-		s = append(s, e.All.String())
-	}
-	s = append(s, e.RHS.String())
-	return joinWithSpace(s)
-}
+func (e SelectSet) String() string { _ = "STUB: not implemented"; return "" }
 
 type SelectEntity struct {
 	*BaseExpr
@@ -321,25 +202,7 @@ type SelectEntity struct {
 	HavingClause  QueryExpression
 }
 
-func (e SelectEntity) String() string {
-	s := []string{e.SelectClause.String()}
-	if e.IntoClause != nil {
-		s = append(s, e.IntoClause.String())
-	}
-	if e.FromClause != nil {
-		s = append(s, e.FromClause.String())
-	}
-	if e.WhereClause != nil {
-		s = append(s, e.WhereClause.String())
-	}
-	if e.GroupByClause != nil {
-		s = append(s, e.GroupByClause.String())
-	}
-	if e.HavingClause != nil {
-		s = append(s, e.HavingClause.String())
-	}
-	return joinWithSpace(s)
-}
+func (e SelectEntity) String() string { _ = "STUB: not implemented"; return "" }
 
 type SelectClause struct {
 	*BaseExpr
@@ -347,81 +210,51 @@ type SelectClause struct {
 	Fields   []QueryExpression
 }
 
-func (sc SelectClause) IsDistinct() bool {
-	return sc.Distinct.Token == DISTINCT
-}
+func (sc SelectClause) IsDistinct() bool { _ = "STUB: not implemented"; return false }
 
-func (sc SelectClause) String() string {
-	s := []string{keyword(SELECT)}
-	if sc.IsDistinct() {
-		s = append(s, sc.Distinct.String())
-	}
-	s = append(s, listQueryExpressions(sc.Fields))
-	return joinWithSpace(s)
-}
+func (sc SelectClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type IntoClause struct {
 	*BaseExpr
 	Variables []Variable
 }
 
-func (e IntoClause) String() string {
-	vars := make([]QueryExpression, 0, len(e.Variables))
-	for _, v := range e.Variables {
-		vars = append(vars, v)
-	}
-	return joinWithSpace([]string{keyword(INTO), listQueryExpressions(vars)})
-}
+func (e IntoClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type FromClause struct {
 	*BaseExpr
 	Tables []QueryExpression
 }
 
-func (f FromClause) String() string {
-	s := []string{keyword(FROM), listQueryExpressions(f.Tables)}
-	return joinWithSpace(s)
-}
+func (f FromClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type WhereClause struct {
 	*BaseExpr
 	Filter QueryExpression
 }
 
-func (w WhereClause) String() string {
-	s := []string{keyword(WHERE), w.Filter.String()}
-	return joinWithSpace(s)
-}
+func (w WhereClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type GroupByClause struct {
 	*BaseExpr
 	Items []QueryExpression
 }
 
-func (gb GroupByClause) String() string {
-	s := []string{keyword(GROUP), keyword(BY), listQueryExpressions(gb.Items)}
-	return joinWithSpace(s)
-}
+func (gb GroupByClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type HavingClause struct {
 	*BaseExpr
 	Filter QueryExpression
 }
 
-func (h HavingClause) String() string {
-	s := []string{keyword(HAVING), h.Filter.String()}
-	return joinWithSpace(s)
-}
+func (h HavingClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type OrderByClause struct {
 	*BaseExpr
 	Items []QueryExpression
 }
 
-func (ob OrderByClause) String() string {
-	s := []string{keyword(ORDER), keyword(BY), listQueryExpressions(ob.Items)}
-	return joinWithSpace(s)
-}
+func (ob OrderByClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type LimitClause struct {
 	*BaseExpr
@@ -433,55 +266,13 @@ type LimitClause struct {
 	OffsetClause QueryExpression
 }
 
-func (e LimitClause) restrictionString() []string {
-	s := make([]string, 0, 2)
-	if e.WithTies() {
-		s = append(s, keyword(WITH))
-	}
-	return append(s, e.Restriction.String())
-}
+func (e LimitClause) restrictionString() []string { _ = "STUB: not implemented"; return nil }
 
-func (e LimitClause) String() string {
-	s := make([]string, 0, 6)
+func (e LimitClause) String() string { _ = "STUB: not implemented"; return "" }
 
-	if e.Type.Token == LIMIT {
-		s = append(s, e.Type.String())
-		s = append(s, e.Value.String())
-		if !e.Unit.IsEmpty() {
-			s = append(s, e.Unit.String())
-		}
-		if !e.Restriction.IsEmpty() {
-			s = append(s, e.restrictionString()...)
-		}
-		if e.OffsetClause != nil {
-			s = append(s, e.OffsetClause.String())
-		}
-	} else if e.Type.Token == FETCH {
-		if e.OffsetClause != nil {
-			s = append(s, e.OffsetClause.String())
-		}
-		s = append(s, e.Type.String())
-		s = append(s, e.Position.String())
-		s = append(s, e.Value.String())
-		s = append(s, e.Unit.String())
-		if !e.Restriction.IsEmpty() {
-			s = append(s, e.restrictionString()...)
-		}
-	} else {
-		if e.OffsetClause != nil {
-			s = append(s, e.OffsetClause.String())
-		}
-	}
-	return joinWithSpace(s)
-}
+func (e LimitClause) Percentage() bool { _ = "STUB: not implemented"; return false }
 
-func (e LimitClause) Percentage() bool {
-	return e.Unit.Token == PERCENT
-}
-
-func (e LimitClause) WithTies() bool {
-	return e.Restriction.Token == TIES
-}
+func (e LimitClause) WithTies() bool { _ = "STUB: not implemented"; return false }
 
 type OffsetClause struct {
 	*BaseExpr
@@ -489,25 +280,14 @@ type OffsetClause struct {
 	Unit  Token
 }
 
-func (e OffsetClause) String() string {
-	s := make([]string, 2, 3)
-	s[0] = keyword(OFFSET)
-	s[1] = e.Value.String()
-	if !e.Unit.IsEmpty() {
-		s = append(s, e.Unit.String())
-	}
-	return joinWithSpace(s)
-}
+func (e OffsetClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type WithClause struct {
 	*BaseExpr
 	InlineTables []QueryExpression
 }
 
-func (e WithClause) String() string {
-	s := []string{keyword(WITH), listQueryExpressions(e.InlineTables)}
-	return joinWithSpace(s)
-}
+func (e WithClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type InlineTable struct {
 	*BaseExpr
@@ -517,40 +297,23 @@ type InlineTable struct {
 	Query     SelectQuery
 }
 
-func (e InlineTable) String() string {
-	s := make([]string, 0)
-	if !e.Recursive.IsEmpty() {
-		s = append(s, e.Recursive.String())
-	}
-	s = append(s, e.Name.String())
-	if e.Fields != nil {
-		s = append(s, putParentheses(listQueryExpressions(e.Fields)))
-	}
-	s = append(s, keyword(AS), putParentheses(e.Query.String()))
-	return joinWithSpace(s)
-}
+func (e InlineTable) String() string { _ = "STUB: not implemented"; return "" }
 
-func (e InlineTable) IsRecursive() bool {
-	return !e.Recursive.IsEmpty()
-}
+func (e InlineTable) IsRecursive() bool { _ = "STUB: not implemented"; return false }
 
 type Subquery struct {
 	*BaseExpr
 	Query SelectQuery
 }
 
-func (e Subquery) String() string {
-	return putParentheses(e.Query.String())
-}
+func (e Subquery) String() string { _ = "STUB: not implemented"; return "" }
 
 type Url struct {
 	*BaseExpr
 	Raw string
 }
 
-func (e Url) String() string {
-	return e.Raw
-}
+func (e Url) String() string { _ = "STUB: not implemented"; return "" }
 
 type TableFunction struct {
 	*BaseExpr
@@ -558,9 +321,7 @@ type TableFunction struct {
 	Args []QueryExpression
 }
 
-func (e TableFunction) String() string {
-	return strings.ToUpper(e.Name) + ConstantDelimiter + putParentheses(listQueryExpressions(e.Args))
-}
+func (e TableFunction) String() string { _ = "STUB: not implemented"; return "" }
 
 type FormatSpecifiedFunction struct {
 	*BaseExpr
@@ -570,17 +331,7 @@ type FormatSpecifiedFunction struct {
 	Args          []QueryExpression
 }
 
-func (e FormatSpecifiedFunction) String() string {
-	allArgs := make([]QueryExpression, 0, len(e.Args)+2)
-	if e.FormatElement != nil {
-		allArgs = append(allArgs, e.FormatElement)
-	}
-	allArgs = append(allArgs, e.Path)
-	if e.Args != nil {
-		allArgs = append(allArgs, e.Args...)
-	}
-	return e.Type.String() + putParentheses(listQueryExpressions(allArgs))
-}
+func (e FormatSpecifiedFunction) String() string { _ = "STUB: not implemented"; return "" }
 
 type JsonQuery struct {
 	*BaseExpr
@@ -589,9 +340,7 @@ type JsonQuery struct {
 	JsonText  QueryExpression
 }
 
-func (e JsonQuery) String() string {
-	return e.JsonQuery.String() + putParentheses(e.Query.String()+", "+e.JsonText.String())
-}
+func (e JsonQuery) String() string { _ = "STUB: not implemented"; return "" }
 
 type Comparison struct {
 	*BaseExpr
@@ -600,10 +349,7 @@ type Comparison struct {
 	RHS      QueryExpression
 }
 
-func (c Comparison) String() string {
-	s := []string{c.LHS.String(), c.Operator.String(), c.RHS.String()}
-	return joinWithSpace(s)
-}
+func (c Comparison) String() string { _ = "STUB: not implemented"; return "" }
 
 type Is struct {
 	*BaseExpr
@@ -612,18 +358,9 @@ type Is struct {
 	Negation Token
 }
 
-func (i Is) IsNegated() bool {
-	return !i.Negation.IsEmpty()
-}
+func (i Is) IsNegated() bool { _ = "STUB: not implemented"; return false }
 
-func (i Is) String() string {
-	s := []string{i.LHS.String(), keyword(IS)}
-	if i.IsNegated() {
-		s = append(s, i.Negation.String())
-	}
-	s = append(s, i.RHS.String())
-	return joinWithSpace(s)
-}
+func (i Is) String() string { _ = "STUB: not implemented"; return "" }
 
 type Between struct {
 	*BaseExpr
@@ -633,18 +370,9 @@ type Between struct {
 	Negation Token
 }
 
-func (b Between) IsNegated() bool {
-	return !b.Negation.IsEmpty()
-}
+func (b Between) IsNegated() bool { _ = "STUB: not implemented"; return false }
 
-func (b Between) String() string {
-	s := []string{b.LHS.String()}
-	if b.IsNegated() {
-		s = append(s, b.Negation.String())
-	}
-	s = append(s, keyword(BETWEEN), b.Low.String(), keyword(AND), b.High.String())
-	return joinWithSpace(s)
-}
+func (b Between) String() string { _ = "STUB: not implemented"; return "" }
 
 type In struct {
 	*BaseExpr
@@ -653,18 +381,9 @@ type In struct {
 	Negation Token
 }
 
-func (i In) IsNegated() bool {
-	return !i.Negation.IsEmpty()
-}
+func (i In) IsNegated() bool { _ = "STUB: not implemented"; return false }
 
-func (i In) String() string {
-	s := []string{i.LHS.String()}
-	if i.IsNegated() {
-		s = append(s, i.Negation.String())
-	}
-	s = append(s, keyword(IN), i.Values.String())
-	return joinWithSpace(s)
-}
+func (i In) String() string { _ = "STUB: not implemented"; return "" }
 
 type All struct {
 	*BaseExpr
@@ -673,10 +392,7 @@ type All struct {
 	Values   QueryExpression
 }
 
-func (a All) String() string {
-	s := []string{a.LHS.String(), a.Operator.String(), keyword(ALL), a.Values.String()}
-	return joinWithSpace(s)
-}
+func (a All) String() string { _ = "STUB: not implemented"; return "" }
 
 type Any struct {
 	*BaseExpr
@@ -685,10 +401,7 @@ type Any struct {
 	Values   QueryExpression
 }
 
-func (a Any) String() string {
-	s := []string{a.LHS.String(), a.Operator.String(), keyword(ANY), a.Values.String()}
-	return joinWithSpace(s)
-}
+func (a Any) String() string { _ = "STUB: not implemented"; return "" }
 
 type Like struct {
 	*BaseExpr
@@ -697,28 +410,16 @@ type Like struct {
 	Negation Token
 }
 
-func (l Like) IsNegated() bool {
-	return !l.Negation.IsEmpty()
-}
+func (l Like) IsNegated() bool { _ = "STUB: not implemented"; return false }
 
-func (l Like) String() string {
-	s := []string{l.LHS.String()}
-	if l.IsNegated() {
-		s = append(s, l.Negation.String())
-	}
-	s = append(s, keyword(LIKE), l.Pattern.String())
-	return joinWithSpace(s)
-}
+func (l Like) String() string { _ = "STUB: not implemented"; return "" }
 
 type Exists struct {
 	*BaseExpr
 	Query Subquery
 }
 
-func (e Exists) String() string {
-	s := []string{keyword(EXISTS), e.Query.String()}
-	return joinWithSpace(s)
-}
+func (e Exists) String() string { _ = "STUB: not implemented"; return "" }
 
 type Arithmetic struct {
 	*BaseExpr
@@ -727,10 +428,7 @@ type Arithmetic struct {
 	RHS      QueryExpression
 }
 
-func (a Arithmetic) String() string {
-	s := []string{a.LHS.String(), a.Operator.String(), a.RHS.String()}
-	return joinWithSpace(s)
-}
+func (a Arithmetic) String() string { _ = "STUB: not implemented"; return "" }
 
 type UnaryArithmetic struct {
 	*BaseExpr
@@ -738,9 +436,7 @@ type UnaryArithmetic struct {
 	Operator Token
 }
 
-func (e UnaryArithmetic) String() string {
-	return e.Operator.String() + e.Operand.String()
-}
+func (e UnaryArithmetic) String() string { _ = "STUB: not implemented"; return "" }
 
 type Logic struct {
 	*BaseExpr
@@ -749,10 +445,7 @@ type Logic struct {
 	RHS      QueryExpression
 }
 
-func (l Logic) String() string {
-	s := []string{l.LHS.String(), l.Operator.String(), l.RHS.String()}
-	return joinWithSpace(s)
-}
+func (l Logic) String() string { _ = "STUB: not implemented"; return "" }
 
 type UnaryLogic struct {
 	*BaseExpr
@@ -760,26 +453,14 @@ type UnaryLogic struct {
 	Operator Token
 }
 
-func (e UnaryLogic) String() string {
-	if e.Operator.Token == NOT {
-		s := []string{e.Operator.String(), e.Operand.String()}
-		return joinWithSpace(s)
-	}
-	return e.Operator.String() + e.Operand.String()
-}
+func (e UnaryLogic) String() string { _ = "STUB: not implemented"; return "" }
 
 type Concat struct {
 	*BaseExpr
 	Items []QueryExpression
 }
 
-func (c Concat) String() string {
-	s := make([]string, len(c.Items))
-	for i, v := range c.Items {
-		s[i] = v.String()
-	}
-	return strings.Join(s, " || ")
-}
+func (c Concat) String() string { _ = "STUB: not implemented"; return "" }
 
 type Function struct {
 	*BaseExpr
@@ -789,20 +470,7 @@ type Function struct {
 	For  Token
 }
 
-func (e Function) String() string {
-	var args string
-	if strings.EqualFold(e.Name, keyword(SUBSTRING)) && !e.From.IsEmpty() {
-		elems := make([]string, 0, 5)
-		elems = append(elems, e.Args[0].String(), e.From.String(), e.Args[1].String())
-		if !e.For.IsEmpty() {
-			elems = append(elems, e.For.String(), e.Args[2].String())
-		}
-		args = joinWithSpace(elems)
-	} else {
-		args = listQueryExpressions(e.Args)
-	}
-	return strings.ToUpper(e.Name) + "(" + args + ")"
-}
+func (e Function) String() string { _ = "STUB: not implemented"; return "" }
 
 type AggregateFunction struct {
 	*BaseExpr
@@ -811,19 +479,9 @@ type AggregateFunction struct {
 	Args     []QueryExpression
 }
 
-func (e AggregateFunction) String() string {
-	s := make([]string, 0)
-	if !e.Distinct.IsEmpty() {
-		s = append(s, e.Distinct.String())
-	}
-	s = append(s, listQueryExpressions(e.Args))
+func (e AggregateFunction) String() string { _ = "STUB: not implemented"; return "" }
 
-	return strings.ToUpper(e.Name) + "(" + joinWithSpace(s) + ")"
-}
-
-func (e AggregateFunction) IsDistinct() bool {
-	return e.Distinct.Token == DISTINCT
-}
+func (e AggregateFunction) IsDistinct() bool { _ = "STUB: not implemented"; return false }
 
 type Table struct {
 	*BaseExpr
@@ -833,20 +491,7 @@ type Table struct {
 	Alias   QueryExpression
 }
 
-func (e Table) String() string {
-	s := make([]string, 0, 4)
-	if !e.Lateral.IsEmpty() {
-		s = append(s, e.Lateral.String())
-	}
-	s = append(s, e.Object.String())
-	if !e.As.IsEmpty() {
-		s = append(s, e.As.String())
-	}
-	if e.Alias != nil {
-		s = append(s, e.Alias.String())
-	}
-	return joinWithSpace(s)
-}
+func (e Table) String() string { _ = "STUB: not implemented"; return "" }
 
 type Join struct {
 	*BaseExpr
@@ -858,23 +503,7 @@ type Join struct {
 	Condition QueryExpression
 }
 
-func (j Join) String() string {
-	s := []string{j.Table.String()}
-	if !j.Natural.IsEmpty() {
-		s = append(s, j.Natural.String())
-	}
-	if !j.Direction.IsEmpty() {
-		s = append(s, j.Direction.String())
-	}
-	if !j.JoinType.IsEmpty() {
-		s = append(s, j.JoinType.String())
-	}
-	s = append(s, keyword(JOIN), j.JoinTable.String())
-	if j.Condition != nil {
-		s = append(s, j.Condition.String())
-	}
-	return joinWithSpace(s)
-}
+func (j Join) String() string { _ = "STUB: not implemented"; return "" }
 
 type JoinCondition struct {
 	*BaseExpr
@@ -882,16 +511,7 @@ type JoinCondition struct {
 	Using []QueryExpression
 }
 
-func (jc JoinCondition) String() string {
-	var s []string
-	if jc.On != nil {
-		s = []string{keyword(ON), jc.On.String()}
-	} else {
-		s = []string{keyword(USING), putParentheses(listQueryExpressions(jc.Using))}
-	}
-
-	return joinWithSpace(s)
-}
+func (jc JoinCondition) String() string { _ = "STUB: not implemented"; return "" }
 
 type Field struct {
 	*BaseExpr
@@ -900,55 +520,27 @@ type Field struct {
 	Alias  QueryExpression
 }
 
-func (f Field) String() string {
-	s := []string{f.Object.String()}
-	if !f.As.IsEmpty() {
-		s = append(s, f.As.String())
-	}
-	if f.Alias != nil {
-		s = append(s, f.Alias.String())
-	}
-	return joinWithSpace(s)
-}
+func (f Field) String() string { _ = "STUB: not implemented"; return "" }
 
-func (f Field) Name() string {
-	if f.Alias != nil {
-		return f.Alias.(Identifier).Literal
-	}
-	if t, ok := f.Object.(PrimitiveType); ok {
-		return t.Literal
-	}
-	if fr, ok := f.Object.(FieldReference); ok {
-		if col, ok := fr.Column.(Identifier); ok {
-			return col.Literal
-		}
-	}
-	return f.Object.String()
-}
+func (f Field) Name() string { _ = "STUB: not implemented"; return "" }
 
 type AllColumns struct {
 	*BaseExpr
 }
 
-func (ac AllColumns) String() string {
-	return "*"
-}
+func (ac AllColumns) String() string { _ = "STUB: not implemented"; return "" }
 
 type Dual struct {
 	*BaseExpr
 }
 
-func (d Dual) String() string {
-	return keyword(DUAL)
-}
+func (d Dual) String() string { _ = "STUB: not implemented"; return "" }
 
 type Stdin struct {
 	*BaseExpr
 }
 
-func (si Stdin) String() string {
-	return keyword(STDIN)
-}
+func (si Stdin) String() string { _ = "STUB: not implemented"; return "" }
 
 type OrderItem struct {
 	*BaseExpr
@@ -957,16 +549,7 @@ type OrderItem struct {
 	NullsPosition Token
 }
 
-func (e OrderItem) String() string {
-	s := []string{e.Value.String()}
-	if !e.Direction.IsEmpty() {
-		s = append(s, e.Direction.String())
-	}
-	if !e.NullsPosition.IsEmpty() {
-		s = append(s, keyword(NULLS), e.NullsPosition.String())
-	}
-	return joinWithSpace(s)
-}
+func (e OrderItem) String() string { _ = "STUB: not implemented"; return "" }
 
 type CaseExpr struct {
 	*BaseExpr
@@ -975,20 +558,7 @@ type CaseExpr struct {
 	Else  QueryExpression
 }
 
-func (e CaseExpr) String() string {
-	s := []string{keyword(CASE)}
-	if e.Value != nil {
-		s = append(s, e.Value.String())
-	}
-	for _, v := range e.When {
-		s = append(s, v.String())
-	}
-	if e.Else != nil {
-		s = append(s, e.Else.String())
-	}
-	s = append(s, keyword(END))
-	return joinWithSpace(s)
-}
+func (e CaseExpr) String() string { _ = "STUB: not implemented"; return "" }
 
 type CaseExprWhen struct {
 	*BaseExpr
@@ -996,20 +566,14 @@ type CaseExprWhen struct {
 	Result    QueryExpression
 }
 
-func (e CaseExprWhen) String() string {
-	s := []string{keyword(WHEN), e.Condition.String(), keyword(THEN), e.Result.String()}
-	return joinWithSpace(s)
-}
+func (e CaseExprWhen) String() string { _ = "STUB: not implemented"; return "" }
 
 type CaseExprElse struct {
 	*BaseExpr
 	Result QueryExpression
 }
 
-func (e CaseExprElse) String() string {
-	s := []string{keyword(ELSE), e.Result.String()}
-	return joinWithSpace(s)
-}
+func (e CaseExprElse) String() string { _ = "STUB: not implemented"; return "" }
 
 type ListFunction struct {
 	*BaseExpr
@@ -1019,23 +583,9 @@ type ListFunction struct {
 	OrderBy  QueryExpression
 }
 
-func (e ListFunction) String() string {
-	args := make([]string, 0, 3)
-	if !e.Distinct.IsEmpty() {
-		args = append(args, e.Distinct.String())
-	}
-	args = append(args, listQueryExpressions(e.Args))
+func (e ListFunction) String() string { _ = "STUB: not implemented"; return "" }
 
-	s := []string{strings.ToUpper(e.Name) + "(" + joinWithSpace(args) + ")"}
-	if e.OrderBy != nil {
-		s = append(s, keyword(WITHIN), keyword(GROUP), "("+e.OrderBy.String()+")")
-	}
-	return joinWithSpace(s)
-}
-
-func (e ListFunction) IsDistinct() bool {
-	return !e.Distinct.IsEmpty()
-}
+func (e ListFunction) IsDistinct() bool { _ = "STUB: not implemented"; return false }
 
 type AnalyticFunction struct {
 	*BaseExpr
@@ -1046,33 +596,11 @@ type AnalyticFunction struct {
 	AnalyticClause AnalyticClause
 }
 
-func (e AnalyticFunction) String() string {
-	args := make([]string, 0, 6)
-	if !e.Distinct.IsEmpty() {
-		args = append(args, e.Distinct.String())
-	}
-	if e.Args != nil {
-		args = append(args, listQueryExpressions(e.Args))
-	}
-	if !e.IgnoreType.IsEmpty() {
-		args = append(args, keyword(IGNORE), e.IgnoreType.String())
-	}
+func (e AnalyticFunction) String() string { _ = "STUB: not implemented"; return "" }
 
-	s := []string{
-		strings.ToUpper(e.Name) + "(" + joinWithSpace(args) + ")",
-		keyword(OVER),
-		"(" + e.AnalyticClause.String() + ")",
-	}
-	return joinWithSpace(s)
-}
+func (e AnalyticFunction) IsDistinct() bool { _ = "STUB: not implemented"; return false }
 
-func (e AnalyticFunction) IsDistinct() bool {
-	return !e.Distinct.IsEmpty()
-}
-
-func (e AnalyticFunction) IgnoreNulls() bool {
-	return e.IgnoreType.Token == NULLS
-}
+func (e AnalyticFunction) IgnoreNulls() bool { _ = "STUB: not implemented"; return false }
 
 type AnalyticClause struct {
 	*BaseExpr
@@ -1081,36 +609,16 @@ type AnalyticClause struct {
 	WindowingClause QueryExpression
 }
 
-func (e AnalyticClause) String() string {
-	s := make([]string, 0)
-	if e.PartitionClause != nil {
-		s = append(s, e.PartitionClause.String())
-	}
-	if e.OrderByClause != nil {
-		s = append(s, e.OrderByClause.String())
-	}
-	if e.WindowingClause != nil {
-		s = append(s, e.WindowingClause.String())
-	}
-	return joinWithSpace(s)
-}
+func (e AnalyticClause) String() string { _ = "STUB: not implemented"; return "" }
 
-func (e AnalyticClause) PartitionValues() []QueryExpression {
-	if e.PartitionClause == nil {
-		return nil
-	}
-	return e.PartitionClause.(PartitionClause).Values
-}
+func (e AnalyticClause) PartitionValues() []QueryExpression { _ = "STUB: not implemented"; return nil }
 
 type PartitionClause struct {
 	*BaseExpr
 	Values []QueryExpression
 }
 
-func (e PartitionClause) String() string {
-	s := []string{keyword(PARTITION), keyword(BY), listQueryExpressions(e.Values)}
-	return joinWithSpace(s)
-}
+func (e PartitionClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type WindowingClause struct {
 	*BaseExpr
@@ -1118,15 +626,7 @@ type WindowingClause struct {
 	FrameHigh QueryExpression
 }
 
-func (e WindowingClause) String() string {
-	s := []string{keyword(ROWS)}
-	if e.FrameHigh == nil {
-		s = append(s, e.FrameLow.String())
-	} else {
-		s = append(s, keyword(BETWEEN), e.FrameLow.String(), keyword(AND), e.FrameHigh.String())
-	}
-	return joinWithSpace(s)
-}
+func (e WindowingClause) String() string { _ = "STUB: not implemented"; return "" }
 
 type WindowFramePosition struct {
 	*BaseExpr
@@ -1135,26 +635,14 @@ type WindowFramePosition struct {
 	Offset    int
 }
 
-func (e WindowFramePosition) String() string {
-	s := make([]string, 0, 2)
-	if e.Direction.Token == CURRENT {
-		s = append(s, keyword(CURRENT), keyword(ROW))
-	} else if !e.Unbounded.IsEmpty() {
-		s = append(s, e.Unbounded.String(), e.Direction.String())
-	} else {
-		s = append(s, strconv.Itoa(e.Offset), e.Direction.String())
-	}
-	return joinWithSpace(s)
-}
+func (e WindowFramePosition) String() string { _ = "STUB: not implemented"; return "" }
 
 type Variable struct {
 	*BaseExpr
 	Name string
 }
 
-func (v Variable) String() string {
-	return string(VariableSign) + v.Name
-}
+func (v Variable) String() string { _ = "STUB: not implemented"; return "" }
 
 type VariableSubstitution struct {
 	*BaseExpr
@@ -1162,9 +650,7 @@ type VariableSubstitution struct {
 	Value    QueryExpression
 }
 
-func (vs VariableSubstitution) String() string {
-	return joinWithSpace([]string{vs.Variable.String(), SubstitutionOperator, vs.Value.String()})
-}
+func (vs VariableSubstitution) String() string { _ = "STUB: not implemented"; return "" }
 
 type VariableAssignment struct {
 	*BaseExpr
@@ -1188,32 +674,21 @@ type EnvironmentVariable struct {
 	Quoted bool
 }
 
-func (e EnvironmentVariable) String() string {
-	name := e.Name
-	if e.Quoted {
-		name = option.QuoteIdentifier(name)
-	}
-
-	return string(VariableSign) + string(EnvironmentVariableSign) + name
-}
+func (e EnvironmentVariable) String() string { _ = "STUB: not implemented"; return "" }
 
 type RuntimeInformation struct {
 	*BaseExpr
 	Name string
 }
 
-func (e RuntimeInformation) String() string {
-	return string(VariableSign) + string(RuntimeInformationSign) + strings.ToUpper(e.Name)
-}
+func (e RuntimeInformation) String() string { _ = "STUB: not implemented"; return "" }
 
 type Flag struct {
 	*BaseExpr
 	Name string
 }
 
-func (e Flag) String() string {
-	return string(VariableSign) + string(VariableSign) + strings.ToUpper(e.Name)
-}
+func (e Flag) String() string { _ = "STUB: not implemented"; return "" }
 
 type SetEnvVar struct {
 	*BaseExpr
@@ -1514,17 +989,7 @@ type CursorStatus struct {
 	Type     Token
 }
 
-func (e CursorStatus) String() string {
-	s := []string{keyword(CURSOR), e.Cursor.String(), keyword(IS)}
-	if !e.Negation.IsEmpty() {
-		s = append(s, e.Negation.String())
-	}
-	if e.Type.Token == RANGE {
-		s = append(s, keyword(IN))
-	}
-	s = append(s, e.Type.String())
-	return joinWithSpace(s)
-}
+func (e CursorStatus) String() string { _ = "STUB: not implemented"; return "" }
 
 type CursorAttrebute struct {
 	*BaseExpr
@@ -1532,10 +997,7 @@ type CursorAttrebute struct {
 	Attrebute Token
 }
 
-func (e CursorAttrebute) String() string {
-	s := []string{keyword(CURSOR), e.Cursor.String(), e.Attrebute.String()}
-	return joinWithSpace(s)
-}
+func (e CursorAttrebute) String() string { _ = "STUB: not implemented"; return "" }
 
 type ViewDeclaration struct {
 	*BaseExpr
@@ -1599,23 +1061,10 @@ type ExternalCommand struct {
 	Command string
 }
 
-func putParentheses(s string) string {
-	return "(" + s + ")"
-}
+func putParentheses(s string) string { _ = "STUB: not implemented"; return "" }
 
-func joinWithSpace(s []string) string {
-	return strings.Join(s, " ")
-}
+func joinWithSpace(s []string) string { _ = "STUB: not implemented"; return "" }
 
-func listQueryExpressions(exprs []QueryExpression) string {
-	s := make([]string, len(exprs))
-	for i, v := range exprs {
-		s[i] = v.String()
-	}
-	return strings.Join(s, ", ")
-}
+func listQueryExpressions(exprs []QueryExpression) string { _ = "STUB: not implemented"; return "" }
 
-func keyword(token int) string {
-	s, _ := KeywordLiteral(token)
-	return s
-}
+func keyword(token int) string { _ = "STUB: not implemented"; return "" }

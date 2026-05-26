@@ -1,9 +1,5 @@
 package parser
 
-import (
-	"fmt"
-)
-
 type Lexer struct {
 	Scanner
 	program []Statement
@@ -11,29 +7,9 @@ type Lexer struct {
 	err     error
 }
 
-func (l *Lexer) Lex(lval *yySymType) int {
-	tok, err := l.Scan()
-	lval.token = tok
-	l.token = lval.token
+func (l *Lexer) Lex(lval *yySymType) int { _ = "STUB: not implemented"; return 0 }
 
-	if err != nil {
-		l.Error(err.Error())
-	}
-
-	return lval.token.Token
-}
-
-func (l *Lexer) Error(e string) {
-	if e == "syntax error" {
-		if l.token.Token == EOF {
-			l.err = NewSyntaxError(fmt.Sprintf("%s: unexpected termination", e), l.token)
-		} else {
-			l.err = NewSyntaxError(fmt.Sprintf("%s: unexpected token %q", e, l.token.Literal), l.token)
-		}
-	} else {
-		l.err = NewSyntaxError(fmt.Sprintf("%s", e), l.token)
-	}
-}
+func (l *Lexer) Error(e string) { _ = "STUB: not implemented"; return }
 
 type Token struct {
 	Token         int
@@ -45,16 +21,9 @@ type Token struct {
 	SourceFile    string
 }
 
-func (t Token) IsEmpty() bool {
-	return t.Token == 0
-}
+func (t Token) IsEmpty() bool { _ = "STUB: not implemented"; return false }
 
-func (t Token) String() string {
-	if lit, err := KeywordLiteral(t.Token); err == nil {
-		return lit
-	}
-	return t.Literal
-}
+func (t Token) String() string { _ = "STUB: not implemented"; return "" }
 
 type SyntaxError struct {
 	SourceFile string
@@ -63,15 +32,6 @@ type SyntaxError struct {
 	Message    string
 }
 
-func (e SyntaxError) Error() string {
-	return e.Message
-}
+func (e SyntaxError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func NewSyntaxError(message string, token Token) error {
-	return &SyntaxError{
-		SourceFile: token.SourceFile,
-		Line:       token.Line,
-		Char:       token.Char,
-		Message:    message,
-	}
-}
+func NewSyntaxError(message string, token Token) error { _ = "STUB: not implemented"; return nil }
